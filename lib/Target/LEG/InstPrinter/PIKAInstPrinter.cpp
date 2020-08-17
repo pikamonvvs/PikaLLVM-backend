@@ -1,4 +1,4 @@
-//===-- LEGInstPrinter.cpp - Convert LEG MCInst to assembly syntax ----===//
+//===-- PIKAInstPrinter.cpp - Convert PIKA MCInst to assembly syntax ----===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,12 +7,12 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This class prints an LEG MCInst to a .s file.
+// This class prints an PIKA MCInst to a .s file.
 //
 //===----------------------------------------------------------------------===//
 
 #define DEBUG_TYPE "asm-printer"
-#include "LEGInstPrinter.h"
+#include "PIKAInstPrinter.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/CodeGen/ISDOpcodes.h"
 #include "llvm/MC/MCExpr.h"
@@ -23,13 +23,13 @@
 #include "llvm/Support/raw_ostream.h"
 using namespace llvm;
 
-#include "LEGGenAsmWriter.inc"
+#include "PIKAGenAsmWriter.inc"
 
-void LEGInstPrinter::printRegName(raw_ostream &OS, unsigned RegNo) const {
+void PIKAInstPrinter::printRegName(raw_ostream &OS, unsigned RegNo) const {
   OS << StringRef(getRegisterName(RegNo)).lower();
 }
 
-void LEGInstPrinter::printInst(const MCInst *MI, raw_ostream &O,
+void PIKAInstPrinter::printInst(const MCInst *MI, raw_ostream &O,
                                StringRef Annot, const MCSubtargetInfo &STI) {
   printInstruction(MI, O);
   printAnnotation(O, Annot);
@@ -50,8 +50,8 @@ static void printExpr(const MCExpr *Expr, raw_ostream &OS) {
   }
   const MCSymbolRefExpr::VariantKind Kind = SRE->getKind();
   assert(Kind == MCSymbolRefExpr::VK_None ||
-         Kind == MCSymbolRefExpr::VK_LEG_LO ||
-         Kind == MCSymbolRefExpr::VK_LEG_HI);
+         Kind == MCSymbolRefExpr::VK_PIKA_LO ||
+         Kind == MCSymbolRefExpr::VK_PIKA_HI);
 
   OS << SRE->getSymbol();
 
@@ -107,7 +107,7 @@ const char * condCodeToString(ISD::CondCode CC) {
 }
 
 // Print a condition code (e.g. for predication).
-void LEGInstPrinter::printCondCode(const MCInst *MI, unsigned OpNum,
+void PIKAInstPrinter::printCondCode(const MCInst *MI, unsigned OpNum,
                                    raw_ostream &O) {
   const MCOperand &Op = MI->getOperand(OpNum);
   ISD::CondCode CC = (ISD::CondCode)Op.getImm();
@@ -116,7 +116,7 @@ void LEGInstPrinter::printCondCode(const MCInst *MI, unsigned OpNum,
 }
 
 // Print a 'memsrc' operand which is a (Register, Offset) pair.
-void LEGInstPrinter::printAddrModeMemSrc(const MCInst *MI, unsigned OpNum,
+void PIKAInstPrinter::printAddrModeMemSrc(const MCInst *MI, unsigned OpNum,
                                          raw_ostream &O) {
   const MCOperand &Op1 = MI->getOperand(OpNum);
   const MCOperand &Op2 = MI->getOperand(OpNum + 1);
@@ -130,7 +130,7 @@ void LEGInstPrinter::printAddrModeMemSrc(const MCInst *MI, unsigned OpNum,
   O << "]";
 }
 
-void LEGInstPrinter::printOperand(const MCInst *MI, unsigned OpNo,
+void PIKAInstPrinter::printOperand(const MCInst *MI, unsigned OpNo,
                                   raw_ostream &O) {
   const MCOperand &Op = MI->getOperand(OpNo);
   if (Op.isReg()) {

@@ -1,25 +1,25 @@
-set(LLVM_TARGET_DEFINITIONS LEG.td)
+set(LLVM_TARGET_DEFINITIONS PIKA.td)
 
-tablegen(LLVM LEGGenRegisterInfo.inc -gen-register-info)
-tablegen(LLVM LEGGenInstrInfo.inc -gen-instr-info)
-tablegen(LLVM LEGGenAsmWriter.inc -gen-asm-writer)
-tablegen(LLVM LEGGenDAGISel.inc -gen-dag-isel)
-tablegen(LLVM LEGGenCallingConv.inc -gen-callingconv)
-tablegen(LLVM LEGGenSubtargetInfo.inc -gen-subtarget)
-tablegen(LLVM LEGGenMCCodeEmitter.inc -gen-emitter)
-add_public_tablegen_target(LEGCommonTableGen)
+tablegen(LLVM PIKAGenRegisterInfo.inc -gen-register-info)
+tablegen(LLVM PIKAGenInstrInfo.inc -gen-instr-info)
+tablegen(LLVM PIKAGenAsmWriter.inc -gen-asm-writer)
+tablegen(LLVM PIKAGenDAGISel.inc -gen-dag-isel)
+tablegen(LLVM PIKAGenCallingConv.inc -gen-callingconv)
+tablegen(LLVM PIKAGenSubtargetInfo.inc -gen-subtarget)
+tablegen(LLVM PIKAGenMCCodeEmitter.inc -gen-emitter)
+add_public_tablegen_target(PIKACommonTableGen)
 
-add_llvm_target(LEGCodeGen
-  LEGSubtarget.cpp
-  LEGTargetMachine.cpp
-  LEGRegisterInfo.cpp
-  LEGInstrInfo.cpp
-  LEGFrameLowering.cpp
-  LEGISelLowering.cpp
-  LEGSelectionDAGInfo.cpp
-  LEGISelDAGToDAG.cpp
-  LEGAsmPrinter.cpp
-  LEGMCInstLower.cpp
+add_llvm_target(PIKACodeGen
+  PIKASubtarget.cpp
+  PIKATargetMachine.cpp
+  PIKARegisterInfo.cpp
+  PIKAInstrInfo.cpp
+  PIKAFrameLowering.cpp
+  PIKAISelLowering.cpp
+  PIKASelectionDAGInfo.cpp
+  PIKAISelDAGToDAG.cpp
+  PIKAAsmPrinter.cpp
+  PIKAMCInstLower.cpp
   )
 
 add_subdirectory(InstPrinter)

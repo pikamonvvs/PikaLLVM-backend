@@ -1,4 +1,4 @@
-//===-- LEG.td - Describe the LEG Target Machine -------*- tablegen -*-===//
+//===-- PIKA.td - Describe the PIKA Target Machine -------*- tabPIKAen -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,7 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This is the top level entry point for the LEG target.
+// This is the top level entry point for the PIKA target.
 //
 //===----------------------------------------------------------------------===//
 
@@ -21,14 +21,14 @@ include "llvm/Target/Target.td"
 // Descriptions
 //===----------------------------------------------------------------------===//
 
-include "LEGRegisterInfo.td"
-include "LEGInstrInfo.td"
-include "LEGCallingConv.td"
+include "PIKARegisterInfo.td"
+include "PIKAInstrInfo.td"
+include "PIKACallingConv.td"
 
-def LEGInstrInfo : InstrInfo;
+def PIKAInstrInfo : InstrInfo;
 
 //===----------------------------------------------------------------------===//
-// LEG processors supported.
+// PIKA processors supported.
 //===----------------------------------------------------------------------===//
 
 class Proc<string Name, list<SubtargetFeature> Features>
@@ -40,6 +40,6 @@ def : Proc<"generic", []>;
 // Declare the target which we are implementing
 //===----------------------------------------------------------------------===//
 
-def LEG : Target {
-  let InstructionSet = LEGInstrInfo;
+def PIKA : Target {
+  let InstructionSet = PIKAInstrInfo;
 }

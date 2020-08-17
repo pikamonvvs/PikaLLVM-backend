@@ -1,4 +1,4 @@
-//===-- LEGAsmBackend.cpp - LEG Assembler Backend -------------------------===//
+//===-- PIKAAsmBackend.cpp - PIKA Assembler Backend -------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,8 +7,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/LEGMCTargetDesc.h"
-#include "MCTargetDesc/LEGFixupKinds.h"
+#include "MCTargetDesc/PIKAMCTargetDesc.h"
+#include "MCTargetDesc/PIKAFixupKinds.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/MC/MCAsmBackend.h"
 #include "llvm/MC/MCAssembler.h"
@@ -30,31 +30,31 @@
 using namespace llvm;
 
 namespace {
-class LEGELFObjectWriter : public MCELFObjectTargetWriter {
+class PIKAELFObjectWriter : public MCELFObjectTargetWriter {
 public:
-  LEGELFObjectWriter(uint8_t OSABI)
-      : MCELFObjectTargetWriter(/*Is64Bit*/ false, OSABI, /*ELF::EM_LEG*/ ELF::EM_ARM,
+  PIKAELFObjectWriter(uint8_t OSABI)
+      : MCELFObjectTargetWriter(/*Is64Bit*/ false, OSABI, /*ELF::EM_PIKA*/ ELF::EM_ARM,
                                 /*HasRelocationAddend*/ false) {}
 };
 
-class LEGAsmBackend : public MCAsmBackend {
+class PIKAAsmBackend : public MCAsmBackend {
 public:
-  LEGAsmBackend(const Target &T, const StringRef TT) : MCAsmBackend() {}
+  PIKAAsmBackend(const Target &T, const StringRef TT) : MCAsmBackend() {}
 
-  ~LEGAsmBackend() {}
+  ~PIKAAsmBackend() {}
 
   unsigned getNumFixupKinds() const override {
-    return LEG::NumTargetFixupKinds;
+    return PIKA::NumTargetFixupKinds;
   }
 
   const MCFixupKindInfo &getFixupKindInfo(MCFixupKind Kind) const override {
-    const static MCFixupKindInfo Infos[LEG::NumTargetFixupKinds] = {
+    const static MCFixupKindInfo Infos[PIKA::NumTargetFixupKinds] = {
       // This table *must* be in the order that the fixup_* kinds are defined in
-      // LEGFixupKinds.h.
+      // PIKAFixupKinds.h.
       //
       // Name                      Offset (bits) Size (bits)     Flags
-      { "fixup_leg_mov_hi16_pcrel", 0, 32, MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_leg_mov_lo16_pcrel", 0, 32, MCFixupKindInfo::FKF_IsPCRel },
+      { "fixup_pika_mov_hi16_pcrel", 0, 32, MCFixupKindInfo::FKF_IsPCRel },
+      { "fixup_pika_mov_lo16_pcrel", 0, 32, MCFixupKindInfo::FKF_IsPCRel },
     };
 
     if (Kind < FirstTargetFixupKind) {
@@ -103,10 +103,10 @@ static unsigned adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   switch (Kind) {
   default:
     llvm_unreachable("Unknown fixup kind!");
-  case LEG::fixup_leg_mov_hi16_pcrel:
+  case PIKA::fixup_pika_mov_hi16_pcrel:
     Value >>= 16;
   // Intentional fall-through
-  case LEG::fixup_leg_mov_lo16_pcrel:
+  case PIKA::fixup_pika_mov_lo16_pcrel:
     unsigned Hi4  = (Value & 0xF000) >> 12;
     unsigned Lo12 = Value & 0x0FFF;
     // inst{19-16} = Hi4;
@@ -117,7 +117,7 @@ static unsigned adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   return Value;
 }
 
-void LEGAsmBackend::processFixupValue(const MCAssembler &Asm,
+void PIKAAsmBackend::processFixupValue(const MCAssembler &Asm,
                                       const MCAsmLayout &Layout,
                                       const MCFixup &Fixup,
                                       const MCFragment *DF,
@@ -130,7 +130,7 @@ void LEGAsmBackend::processFixupValue(const MCAssembler &Asm,
   (void)adjustFixupValue(Fixup, Value, &Asm.getContext());
 }
 
-void LEGAsmBackend::applyFixup(const MCFixup &Fixup, char *Data,
+void PIKAAsmBackend::applyFixup(const MCFixup &Fixup, char *Data,
                                unsigned DataSize, uint64_t Value,
                                bool isPCRel) const {
   unsigned NumBytes = 4;
@@ -152,22 +152,22 @@ void LEGAsmBackend::applyFixup(const MCFixup &Fixup, char *Data,
 
 namespace {
 
-class ELFLEGAsmBackend : public LEGAsmBackend {
+class ELFPIKAAsmBackend : public PIKAAsmBackend {
 public:
   uint8_t OSABI;
-  ELFLEGAsmBackend(const Target &T, const StringRef TT, uint8_t _OSABI)
-      : LEGAsmBackend(T, TT), OSABI(_OSABI) {}
+  ELFPIKAAsmBackend(const Target &T, const StringRef TT, uint8_t _OSABI)
+      : PIKAAsmBackend(T, TT), OSABI(_OSABI) {}
 
   MCObjectWriter *createObjectWriter(raw_pwrite_stream &OS) const override {
-    return createLEGELFObjectWriter(OS, OSABI);
+    return createPIKAELFObjectWriter(OS, OSABI);
   }
 };
 
 } // end anonymous namespace
 
-MCAsmBackend *llvm::createLEGAsmBackend(const Target &T,
+MCAsmBackend *llvm::createPIKAAsmBackend(const Target &T,
                                         const MCRegisterInfo &MRI,
                                         const Triple &TT, StringRef CPU) {
   const uint8_t ABI = MCELFObjectTargetWriter::getOSABI(TT.getOS());
-  return new ELFLEGAsmBackend(T, TT.getTriple(), ABI);
+  return new ELFPIKAAsmBackend(T, TT.getTriple(), ABI);
 }

@@ -1,4 +1,4 @@
-//===-- LEGSubtarget.cpp - LEG Subtarget Information ------------------===//
+//===-- PIKASubtarget.cpp - PIKA Subtarget Information ------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,26 +7,26 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file implements the LEG specific subclass of TargetSubtargetInfo.
+// This file implements the PIKA specific subclass of TargetSubtargetInfo.
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGSubtarget.h"
-#include "LEG.h"
+#include "PIKASubtarget.h"
+#include "PIKA.h"
 #include "llvm/Support/TargetRegistry.h"
 
-#define DEBUG_TYPE "leg-subtarget"
+#define DEBUG_TYPE "pika-subtarget"
 
 #define GET_SUBTARGETINFO_TARGET_DESC
 #define GET_SUBTARGETINFO_CTOR
-#include "LEGGenSubtargetInfo.inc"
+#include "PIKAGenSubtargetInfo.inc"
 
 using namespace llvm;
 
-void LEGSubtarget::anchor() {}
+void PIKASubtarget::anchor() {}
 
-LEGSubtarget::LEGSubtarget(const Triple &TT, StringRef CPU, StringRef FS,
-                           LEGTargetMachine &TM)
-    : LEGGenSubtargetInfo(TT, CPU, FS),
+PIKASubtarget::PIKASubtarget(const Triple &TT, StringRef CPU, StringRef FS,
+                           PIKATargetMachine &TM)
+    : PIKAGenSubtargetInfo(TT, CPU, FS),
       DL("e-m:e-p:32:32-i1:8:32-i8:8:32-i16:16:32-i64:32-f64:32-a:0:32-n32"),
       InstrInfo(), TLInfo(TM), TSInfo(), FrameLowering() {}

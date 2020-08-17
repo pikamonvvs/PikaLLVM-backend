@@ -1,4 +1,4 @@
-//===-- LEGMCInstLower.cpp - Convert LEG MachineInstr to MCInst -------===//
+//===-- PIKAMCInstLower.cpp - Convert PIKA MachineInstr to MCInst -------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -8,12 +8,12 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// \brief This file contains code to lower LEG MachineInstrs to their
+/// \brief This file contains code to lower PIKA MachineInstrs to their
 /// corresponding MCInst records.
 ///
 //===----------------------------------------------------------------------===//
-#include "LEGMCInstLower.h"
-#include "MCTargetDesc/LEGBaseInfo.h"
+#include "PIKAMCInstLower.h"
+#include "MCTargetDesc/PIKABaseInfo.h"
 #include "llvm/CodeGen/AsmPrinter.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstr.h"
@@ -25,15 +25,15 @@
 
 using namespace llvm;
 
-LEGMCInstLower::LEGMCInstLower(class AsmPrinter &asmprinter)
+PIKAMCInstLower::PIKAMCInstLower(class AsmPrinter &asmprinter)
     : Printer(asmprinter) {}
 
-void LEGMCInstLower::Initialize(Mangler *M, MCContext *C) {
+void PIKAMCInstLower::Initialize(Mangler *M, MCContext *C) {
   Mang = M;
   Ctx = C;
 }
 
-MCOperand LEGMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
+MCOperand PIKAMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
                                              MachineOperandType MOTy,
                                              unsigned Offset) const {
   const MCSymbol *Symbol;
@@ -65,17 +65,17 @@ MCOperand LEGMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
     llvm_unreachable("<unknown operand type>");
   }
 
-  const unsigned Option = MO.getTargetFlags() & LEGII::MO_OPTION_MASK;
+  const unsigned Option = MO.getTargetFlags() & PIKAII::MO_OPTION_MASK;
   MCSymbolRefExpr::VariantKind Kind = MCSymbolRefExpr::VK_None;
 
   switch (Option) {
     default:
       break;
-    case LEGII::MO_LO16:
-      Kind = MCSymbolRefExpr::VK_LEG_LO;
+    case PIKAII::MO_LO16:
+      Kind = MCSymbolRefExpr::VK_PIKA_LO;
       break;
-    case LEGII::MO_HI16:
-      Kind = MCSymbolRefExpr::VK_LEG_HI;
+    case PIKAII::MO_HI16:
+      Kind = MCSymbolRefExpr::VK_PIKA_HI;
       break;
   }
   const MCSymbolRefExpr *MCSym = MCSymbolRefExpr::create(Symbol, Kind, *Ctx);
@@ -92,7 +92,7 @@ MCOperand LEGMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
   return MCOperand::createExpr(Add);
 }
 
-MCOperand LEGMCInstLower::LowerOperand(const MachineOperand &MO,
+MCOperand PIKAMCInstLower::LowerOperand(const MachineOperand &MO,
                                        unsigned offset) const {
   MachineOperandType MOTy = MO.getType();
 
@@ -121,7 +121,7 @@ MCOperand LEGMCInstLower::LowerOperand(const MachineOperand &MO,
   return MCOperand();
 }
 
-void LEGMCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
+void PIKAMCInstLower::Lower(const MachineInstr *MI, MCInst &OutMI) const {
   OutMI.setOpcode(MI->getOpcode());
 
   for (auto &MO : MI->operands()) {

@@ -1,7 +1,7 @@
-add_llvm_library(LLVMLEGDesc
-  LEGMCTargetDesc.cpp
-  LEGMCAsmInfo.cpp
-  LEGMCCodeEmitter.cpp
-  LEGAsmBackend.cpp
-  LEGELFObjectWriter.cpp
+add_llvm_library(LLVMPIKADesc
+  PIKAMCTargetDesc.cpp
+  PIKAMCAsmInfo.cpp
+  PIKAMCCodeEmitter.cpp
+  PIKAAsmBackend.cpp
+  PIKAELFObjectWriter.cpp
   )
