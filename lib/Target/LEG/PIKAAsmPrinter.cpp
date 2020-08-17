@@ -1,4 +1,4 @@
-//===-- LEGAsmPrinter.cpp - LEG LLVM assembly writer ------------------===//
+//===-- PIKAAsmPrinter.cpp - PIKA LLVM assembly writer ------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -8,17 +8,17 @@
 //===----------------------------------------------------------------------===//
 //
 // This file contains a printer that converts from our internal representation
-// of machine-dependent LLVM code to the XAS-format LEG assembly language.
+// of machine-dependent LLVM code to the XAS-format PIKA assembly language.
 //
 //===----------------------------------------------------------------------===//
 
 #define DEBUG_TYPE "asm-printer"
-#include "LEG.h"
-#include "InstPrinter/LEGInstPrinter.h"
-#include "LEGInstrInfo.h"
-#include "LEGMCInstLower.h"
-#include "LEGSubtarget.h"
-#include "LEGTargetMachine.h"
+#include "PIKA.h"
+#include "InstPrinter/PIKAInstPrinter.h"
+#include "PIKAInstrInfo.h"
+#include "PIKAMCInstLower.h"
+#include "PIKASubtarget.h"
+#include "PIKATargetMachine.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/CodeGen/AsmPrinter.h"
@@ -47,15 +47,15 @@
 using namespace llvm;
 
 namespace {
-class LEGAsmPrinter : public AsmPrinter {
-  LEGMCInstLower MCInstLowering;
+class PIKAAsmPrinter : public AsmPrinter {
+  PIKAMCInstLower MCInstLowering;
 
 public:
-  explicit LEGAsmPrinter(TargetMachine &TM,
+  explicit PIKAAsmPrinter(TargetMachine &TM,
                          std::unique_ptr<MCStreamer> Streamer)
       : AsmPrinter(TM, std::move(Streamer)), MCInstLowering(*this) {}
 
-  virtual const char *getPassName() const { return "LEG Assembly Printer"; }
+  virtual const char *getPassName() const { return "PIKA Assembly Printer"; }
 
   void EmitFunctionEntryLabel();
   void EmitInstruction(const MachineInstr *MI);
@@ -63,15 +63,15 @@ public:
 };
 } // end of anonymous namespace
 
-void LEGAsmPrinter::EmitFunctionBodyStart() {
+void PIKAAsmPrinter::EmitFunctionBodyStart() {
   MCInstLowering.Initialize(Mang, &MF->getContext());
 }
 
-void LEGAsmPrinter::EmitFunctionEntryLabel() {
+void PIKAAsmPrinter::EmitFunctionEntryLabel() {
   OutStreamer->EmitLabel(CurrentFnSym);
 }
 
-void LEGAsmPrinter::EmitInstruction(const MachineInstr *MI) {
+void PIKAAsmPrinter::EmitInstruction(const MachineInstr *MI) {
   MCInst TmpInst;
   MCInstLowering.Lower(MI, TmpInst);
 
@@ -79,6 +79,6 @@ void LEGAsmPrinter::EmitInstruction(const MachineInstr *MI) {
 }
 
 // Force static initialization.
-extern "C" void LLVMInitializeLEGAsmPrinter() {
-  RegisterAsmPrinter<LEGAsmPrinter> X(TheLEGTarget);
+extern "C" void LLVMInitializePIKAAsmPrinter() {
+  RegisterAsmPrinter<PIKAAsmPrinter> X(ThePIKATarget);
 }

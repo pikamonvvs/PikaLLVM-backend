@@ -1,4 +1,4 @@
-;===- ./lib/Target/LEG/LLVMBuild.txt -------------------------*- Conf -*--===;
+;===- ./lib/Target/PIKA/LLVMBuild.txt -------------------------*- Conf -*--===;
 ;
 ;                     The LLVM Compiler Infrastructure
 ;
@@ -20,14 +20,14 @@ subdirectories = InstPrinter MCTargetDesc TargetInfo
 
 [component_0]
 type = TargetGroup
-name = LEG
+name = PIKA
 parent = Target
 has_asmprinter = 0
 has_disassembler = 0
 
 [component_1]
 type = Library
-name = LEGCodeGen
-parent = LEG
-required_libraries = Analysis AsmPrinter CodeGen Core MC SelectionDAG Support Target TransformUtils LEGAsmPrinter LEGDesc LEGInfo
-add_to_library_groups = LEG
+name = PIKACodeGen
+parent = PIKA
+required_libraries = Analysis AsmPrinter CodeGen Core MC SelectionDAG Support Target TransformUtils PIKAAsmPrinter PIKADesc PIKAInfo
+add_to_library_groups = PIKA

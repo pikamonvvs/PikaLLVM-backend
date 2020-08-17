@@ -1,4 +1,4 @@
-//===-- LEGSubtarget.h - Define Subtarget for the LEG -------*- C++ -*-===//
+//===-- PIKASubtarget.h - Define Subtarget for the PIKA -------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,63 +7,63 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file declares the LEG specific subclass of TargetSubtargetInfo.
+// This file declares the PIKA specific subclass of TargetSubtargetInfo.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGSUBTARGET_H
-#define LEGSUBTARGET_H
+#ifndef PIKASUBTARGET_H
+#define PIKASUBTARGET_H
 
-#include "LEG.h"
-#include "LEGFrameLowering.h"
-#include "LEGISelLowering.h"
-#include "LEGInstrInfo.h"
-#include "LEGSelectionDAGInfo.h"
-#include "LEGSubtarget.h"
+#include "PIKA.h"
+#include "PIKAFrameLowering.h"
+#include "PIKAISelLowering.h"
+#include "PIKAInstrInfo.h"
+#include "PIKASelectionDAGInfo.h"
+#include "PIKASubtarget.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetSubtargetInfo.h"
 #include <string>
 
 #define GET_SUBTARGETINFO_HEADER
-#include "LEGGenSubtargetInfo.inc"
+#include "PIKAGenSubtargetInfo.inc"
 
 namespace llvm {
 class StringRef;
 
-class LEGSubtarget : public LEGGenSubtargetInfo {
+class PIKASubtarget : public PIKAGenSubtargetInfo {
   virtual void anchor();
 
 private:
   const DataLayout DL;       // Calculates type size & alignment.
-  LEGInstrInfo InstrInfo;
-  LEGTargetLowering TLInfo;
-  LEGSelectionDAGInfo TSInfo;
-  LEGFrameLowering FrameLowering;
+  PIKAInstrInfo InstrInfo;
+  PIKATargetLowering TLInfo;
+  PIKASelectionDAGInfo TSInfo;
+  PIKAFrameLowering FrameLowering;
   InstrItineraryData InstrItins;
 
 public:
   /// This constructor initializes the data members to match that
   /// of the specified triple.
   ///
-  LEGSubtarget(const Triple &TT, StringRef CPU,
-               StringRef FS, LEGTargetMachine &TM);
+  PIKASubtarget(const Triple &TT, StringRef CPU,
+               StringRef FS, PIKATargetMachine &TM);
 
   /// getInstrItins - Return the instruction itineraries based on subtarget
   /// selection.
   const InstrItineraryData *getInstrItineraryData() const override {
     return &InstrItins;
   }
-  const LEGInstrInfo *getInstrInfo() const override { return &InstrInfo; }
-  const LEGRegisterInfo *getRegisterInfo() const override {
+  const PIKAInstrInfo *getInstrInfo() const override { return &InstrInfo; }
+  const PIKARegisterInfo *getRegisterInfo() const override {
     return &InstrInfo.getRegisterInfo();
   }
-  const LEGTargetLowering *getTargetLowering() const override {
+  const PIKATargetLowering *getTargetLowering() const override {
     return &TLInfo;
   }
-  const LEGFrameLowering *getFrameLowering() const override {
+  const PIKAFrameLowering *getFrameLowering() const override {
     return &FrameLowering;
   }
-  const LEGSelectionDAGInfo *getSelectionDAGInfo() const override {
+  const PIKASelectionDAGInfo *getSelectionDAGInfo() const override {
     return &TSInfo;
   }
 

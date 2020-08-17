@@ -1,4 +1,4 @@
-//===-- LEGSelectionDAGInfo.h - LEG SelectionDAG Info -------*- C++ -*-===//
+//===-- PIKASelectionDAGInfo.h - PIKA SelectionDAG Info -------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,20 +7,20 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file defines the LEG subclass for TargetSelectionDAGInfo.
+// This file defines the PIKA subclass for TargetSelectionDAGInfo.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGSELECTIONDAGINFO_H
-#define LEGSELECTIONDAGINFO_H
+#ifndef PIKASELECTIONDAGINFO_H
+#define PIKASELECTIONDAGINFO_H
 
 #include "llvm/Target/TargetSelectionDAGInfo.h"
 
 namespace llvm {
 
-class LEGSelectionDAGInfo : public TargetSelectionDAGInfo {
+class PIKASelectionDAGInfo : public TargetSelectionDAGInfo {
 public:
-  ~LEGSelectionDAGInfo();
+  ~PIKASelectionDAGInfo();
 };
 }
 

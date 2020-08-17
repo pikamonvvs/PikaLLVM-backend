@@ -1,3 +1,3 @@
-add_llvm_library(LLVMLEGAsmPrinter
-  LEGInstPrinter.cpp
+add_llvm_library(LLVMPIKAAsmPrinter
+  PIKAInstPrinter.cpp
   )

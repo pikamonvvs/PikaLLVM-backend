@@ -1,4 +1,4 @@
-//===-- LEG.h - Top-level interface for LEG representation --*- C++ -*-===//
+//===-- PIKA.h - Top-level interface for PIKA representation --*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -8,21 +8,21 @@
 //===----------------------------------------------------------------------===//
 //
 // This file contains the entry points for global functions defined in the LLVM
-// LEG back-end.
+// PIKA back-end.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef TARGET_LEG_H
-#define TARGET_LEG_H
+#ifndef TARGET_PIKA_H
+#define TARGET_PIKA_H
 
-#include "MCTargetDesc/LEGMCTargetDesc.h"
+#include "MCTargetDesc/PIKAMCTargetDesc.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
 class TargetMachine;
-class LEGTargetMachine;
+class PIKATargetMachine;
 
-FunctionPass *createLEGISelDag(LEGTargetMachine &TM,
+FunctionPass *createPIKAISelDag(PIKATargetMachine &TM,
                                CodeGenOpt::Level OptLevel);
 } // end namespace llvm;
 

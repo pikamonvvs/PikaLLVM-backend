@@ -1,4 +1,4 @@
-//===-- LEGMCInstLower.h - Lower MachineInstr to MCInst ------*- C++ -*--===//
+//===-- PIKAMCInstLower.h - Lower MachineInstr to MCInst ------*- C++ -*--===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,8 +7,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGMCINSTLOWER_H
-#define LEGMCINSTLOWER_H
+#ifndef PIKAMCINSTLOWER_H
+#define PIKAMCINSTLOWER_H
 #include "llvm/CodeGen/MachineOperand.h"
 #include "llvm/Support/Compiler.h"
 
@@ -22,14 +22,14 @@ class Mangler;
 class AsmPrinter;
 
 /// \brief This class is used to lower an MachineInstr into an MCInst.
-class LLVM_LIBRARY_VISIBILITY LEGMCInstLower {
+class LLVM_LIBRARY_VISIBILITY PIKAMCInstLower {
   typedef MachineOperand::MachineOperandType MachineOperandType;
   MCContext *Ctx;
   Mangler *Mang;
   AsmPrinter &Printer;
 
 public:
-  LEGMCInstLower(class AsmPrinter &asmprinter);
+  PIKAMCInstLower(class AsmPrinter &asmprinter);
   void Initialize(Mangler *mang, MCContext *C);
   void Lower(const MachineInstr *MI, MCInst &OutMI) const;
   MCOperand LowerOperand(const MachineOperand &MO, unsigned offset = 0) const;

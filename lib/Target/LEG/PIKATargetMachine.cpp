@@ -1,4 +1,4 @@
-//===-- LEGTargetMachine.cpp - Define TargetMachine for LEG -----------===//
+//===-- PIKATargetMachine.cpp - Define TargetMachine for PIKA -----------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -10,12 +10,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGTargetMachine.h"
-#include "LEG.h"
-#include "LEGFrameLowering.h"
-#include "LEGInstrInfo.h"
-#include "LEGISelLowering.h"
-#include "LEGSelectionDAGInfo.h"
+#include "PIKATargetMachine.h"
+#include "PIKA.h"
+#include "PIKAFrameLowering.h"
+#include "PIKAInstrInfo.h"
+#include "PIKAISelLowering.h"
+#include "PIKASelectionDAGInfo.h"
 #include "llvm/CodeGen/Passes.h"
 #include "llvm/CodeGen/TargetLoweringObjectFileImpl.h"
 #include "llvm/IR/Module.h"
@@ -31,7 +31,7 @@ static std::string computeDataLayout(const Triple &TT, StringRef CPU,
   return "e-m:e-p:32:32-i1:8:32-i8:8:32-i16:16:32-i64:32-f64:32-a:0:32-n32";
 }
 
-LEGTargetMachine::LEGTargetMachine(const Target &T, const Triple &TT,
+PIKATargetMachine::PIKATargetMachine(const Target &T, const Triple &TT,
                                    StringRef CPU, StringRef FS,
                                    const TargetOptions &Options,
                                    Reloc::Model RM, CodeModel::Model CM,
@@ -44,14 +44,14 @@ LEGTargetMachine::LEGTargetMachine(const Target &T, const Triple &TT,
 }
 
 namespace {
-/// LEG Code Generator Pass Configuration Options.
-class LEGPassConfig : public TargetPassConfig {
+/// PIKA Code Generator Pass Configuration Options.
+class PIKAPassConfig : public TargetPassConfig {
 public:
-  LEGPassConfig(LEGTargetMachine *TM, PassManagerBase &PM)
+  PIKAPassConfig(PIKATargetMachine *TM, PassManagerBase &PM)
       : TargetPassConfig(TM, PM) {}
 
-  LEGTargetMachine &getLEGTargetMachine() const {
-    return getTM<LEGTargetMachine>();
+  PIKATargetMachine &getPIKATargetMachine() const {
+    return getTM<PIKATargetMachine>();
   }
 
   virtual bool addPreISel() override;
@@ -60,20 +60,20 @@ public:
 };
 } // namespace
 
-TargetPassConfig *LEGTargetMachine::createPassConfig(PassManagerBase &PM) {
-  return new LEGPassConfig(this, PM);
+TargetPassConfig *PIKATargetMachine::createPassConfig(PassManagerBase &PM) {
+  return new PIKAPassConfig(this, PM);
 }
 
-bool LEGPassConfig::addPreISel() { return false; }
+bool PIKAPassConfig::addPreISel() { return false; }
 
-bool LEGPassConfig::addInstSelector() {
-  addPass(createLEGISelDag(getLEGTargetMachine(), getOptLevel()));
+bool PIKAPassConfig::addInstSelector() {
+  addPass(createPIKAISelDag(getPIKATargetMachine(), getOptLevel()));
   return false;
 }
 
-void LEGPassConfig::addPreEmitPass() {}
+void PIKAPassConfig::addPreEmitPass() {}
 
 // Force static initialization.
-extern "C" void LLVMInitializeLEGTarget() {
-  RegisterTargetMachine<LEGTargetMachine> X(TheLEGTarget);
+extern "C" void LLVMInitializePIKATarget() {
+  RegisterTargetMachine<PIKATargetMachine> X(ThePIKATarget);
 }

@@ -1,4 +1,4 @@
-;===- ./lib/Target/LEG/MCTargetDesc/LLVMBuild.txt ------------*- Conf -*--===;
+;===- ./lib/Target/PIKA/MCTargetDesc/LLVMBuild.txt ------------*- Conf -*--===;
 ;
 ;                     The LLVM Compiler Infrastructure
 ;
@@ -17,7 +17,7 @@
 
 [component_0]
 type = Library
-name = LEGDesc
-parent = LEG
-required_libraries = MC Support LEGAsmPrinter LEGInfo
-add_to_library_groups = LEG
+name = PIKADesc
+parent = PIKA
+required_libraries = MC Support PIKAAsmPrinter PIKAInfo
+add_to_library_groups = PIKA

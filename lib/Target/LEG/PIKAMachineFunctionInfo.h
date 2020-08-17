@@ -1,4 +1,4 @@
-//===-- LEGMachineFuctionInfo.h - LEG machine function info -*- C++ -*-===//
+//===-- PIKAMachineFuctionInfo.h - PIKA machine function info -*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,12 +7,12 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file declares LEG-specific per-machine-function information.
+// This file declares PIKA-specific per-machine-function information.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGMACHINEFUNCTIONINFO_H
-#define LEGMACHINEFUNCTIONINFO_H
+#ifndef PIKAMACHINEFUNCTIONINFO_H
+#define PIKAMACHINEFUNCTIONINFO_H
 
 #include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
@@ -22,15 +22,15 @@ namespace llvm {
 // Forward declarations
 class Function;
 
-/// LEGFunctionInfo - This class is derived from MachineFunction private
-/// LEG target-specific information for each MachineFunction.
-class LEGFunctionInfo : public MachineFunctionInfo {
+/// PIKAFunctionInfo - This class is derived from MachineFunction private
+/// PIKA target-specific information for each MachineFunction.
+class PIKAFunctionInfo : public MachineFunctionInfo {
 public:
-  LEGFunctionInfo() {}
+  PIKAFunctionInfo() {}
 
-  ~LEGFunctionInfo() {}
+  ~PIKAFunctionInfo() {}
 };
 } // End llvm namespace
 
-#endif // LEGMACHINEFUNCTIONINFO_H
+#endif // PIKAMACHINEFUNCTIONINFO_H
 

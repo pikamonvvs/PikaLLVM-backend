@@ -1,4 +1,4 @@
-//===-- LEGSelectionDAGInfo.cpp - LEG SelectionDAG Info ---------------===//
+//===-- PIKASelectionDAGInfo.cpp - PIKA SelectionDAG Info ---------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,13 +7,13 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file implements the LEGSelectionDAGInfo class.
+// This file implements the PIKASelectionDAGInfo class.
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGSelectionDAGInfo.h"
+#include "PIKASelectionDAGInfo.h"
 using namespace llvm;
 
-#define DEBUG_TYPE "leg-selectiondag-info"
+#define DEBUG_TYPE "pika-selectiondag-info"
 
-LEGSelectionDAGInfo::~LEGSelectionDAGInfo() {}
+PIKASelectionDAGInfo::~PIKASelectionDAGInfo() {}

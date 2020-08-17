@@ -1,4 +1,4 @@
-//===-- LEGTargetInfo.cpp - LEG Target Implementation -----------------===//
+//===-- PIKATargetInfo.cpp - PIKA Target Implementation -----------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,13 +7,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEG.h"
+#include "PIKA.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Support/TargetRegistry.h"
 using namespace llvm;
 
-Target llvm::TheLEGTarget;
+Target llvm::ThePIKATarget;
 
-extern "C" void LLVMInitializeLEGTargetInfo() {
-  RegisterTarget<Triple::leg> X(TheLEGTarget, "leg", "LEG");
+extern "C" void LLVMInitializePIKATargetInfo() {
+  RegisterTarget<Triple::pika> X(ThePIKATarget, "pika", "PIKA");
 }

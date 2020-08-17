@@ -1,4 +1,4 @@
-//===-- LEGMCTargetDesc.h - LEG Target Descriptions ---------*- C++ -*-===//
+//===-- PIKAMCTargetDesc.h - PIKA Target Descriptions ---------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,12 +7,12 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file provides LEG specific target descriptions.
+// This file provides PIKA specific target descriptions.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGMCTARGETDESC_H
-#define LEGMCTARGETDESC_H
+#ifndef PIKAMCTARGETDESC_H
+#define PIKAMCTARGETDESC_H
 
 #include "llvm/Support/DataTypes.h"
 
@@ -34,31 +34,31 @@ class raw_ostream;
 class raw_pwrite_stream;
 class Triple;
 
-extern Target TheLEGTarget;
+extern Target ThePIKATarget;
 
-MCCodeEmitter *createLEGMCCodeEmitter(const MCInstrInfo &MCII,
+MCCodeEmitter *createPIKAMCCodeEmitter(const MCInstrInfo &MCII,
                                       const MCRegisterInfo &MRI,
                                       MCContext &Ctx);
 
-MCAsmBackend *createLEGAsmBackend(const Target &T, const MCRegisterInfo &MRI,
+MCAsmBackend *createPIKAAsmBackend(const Target &T, const MCRegisterInfo &MRI,
                                   const Triple &TT, StringRef CPU);
 
-MCObjectWriter *createLEGELFObjectWriter(raw_pwrite_stream &OS, uint8_t OSABI);
+MCObjectWriter *createPIKAELFObjectWriter(raw_pwrite_stream &OS, uint8_t OSABI);
 
 } // End llvm namespace
 
-// Defines symbolic names for LEG registers.  This defines a mapping from
+// Defines symbolic names for PIKA registers.  This defines a mapping from
 // register name to register number.
 //
 #define GET_REGINFO_ENUM
-#include "LEGGenRegisterInfo.inc"
+#include "PIKAGenRegisterInfo.inc"
 
-// Defines symbolic names for the LEG instructions.
+// Defines symbolic names for the PIKA instructions.
 //
 #define GET_INSTRINFO_ENUM
-#include "LEGGenInstrInfo.inc"
+#include "PIKAGenInstrInfo.inc"
 
 #define GET_SUBTARGETINFO_ENUM
-#include "LEGGenSubtargetInfo.inc"
+#include "PIKAGenSubtargetInfo.inc"
 
 #endif

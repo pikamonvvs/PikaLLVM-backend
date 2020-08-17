@@ -1,4 +1,4 @@
-//===-- LEGTargetMachine.h - Define TargetMachine for LEG ---*- C++ -*-===//
+//===-- PIKATargetMachine.h - Define TargetMachine for PIKA ---*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,34 +7,34 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file declares the LEG specific subclass of TargetMachine.
+// This file declares the PIKA specific subclass of TargetMachine.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGTARGETMACHINE_H
-#define LEGTARGETMACHINE_H
+#ifndef PIKATARGETMACHINE_H
+#define PIKATARGETMACHINE_H
 
-#include "LEG.h"
-#include "LEGFrameLowering.h"
-#include "LEGISelLowering.h"
-#include "LEGInstrInfo.h"
-#include "LEGSelectionDAGInfo.h"
-#include "LEGSubtarget.h"
+#include "PIKA.h"
+#include "PIKAFrameLowering.h"
+#include "PIKAISelLowering.h"
+#include "PIKAInstrInfo.h"
+#include "PIKASelectionDAGInfo.h"
+#include "PIKASubtarget.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
 
-class LEGTargetMachine : public LLVMTargetMachine {
-  LEGSubtarget Subtarget;
+class PIKATargetMachine : public LLVMTargetMachine {
+  PIKASubtarget Subtarget;
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
 
 public:
-  LEGTargetMachine(const Target &T, const Triple &TT, StringRef CPU,
+  PIKATargetMachine(const Target &T, const Triple &TT, StringRef CPU,
                    StringRef FS, const TargetOptions &Options, Reloc::Model RM,
                    CodeModel::Model CM, CodeGenOpt::Level OL);
   
-  const LEGSubtarget * getSubtargetImpl() const {
+  const PIKASubtarget * getSubtargetImpl() const {
     return &Subtarget;
   }
   

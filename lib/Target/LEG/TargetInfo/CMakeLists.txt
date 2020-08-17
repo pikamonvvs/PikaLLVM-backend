@@ -1,3 +1,3 @@
-add_llvm_library(LLVMLEGInfo
-  LEGTargetInfo.cpp
+add_llvm_library(LLVMPIKAInfo
+  PIKATargetInfo.cpp
   )

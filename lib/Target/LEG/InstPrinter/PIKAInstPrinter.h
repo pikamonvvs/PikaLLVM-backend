@@ -1,4 +1,4 @@
-//== LEGInstPrinter.h - Convert LEG MCInst to assembly syntax -*- C++ -*-=//
+//== PIKAInstPrinter.h - Convert PIKA MCInst to assembly syntax -*- C++ -*-=//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -8,22 +8,22 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// \brief This file contains the declaration of the LEGInstPrinter class,
-/// which is used to print LEG MCInst to a .s file.
+/// \brief This file contains the declaration of the PIKAInstPrinter class,
+/// which is used to print PIKA MCInst to a .s file.
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGINSTPRINTER_H
-#define LEGINSTPRINTER_H
+#ifndef PIKAINSTPRINTER_H
+#define PIKAINSTPRINTER_H
 #include "llvm/MC/MCInstPrinter.h"
 
 namespace llvm {
 
 class TargetMachine;
 
-class LEGInstPrinter : public MCInstPrinter {
+class PIKAInstPrinter : public MCInstPrinter {
 public:
-  LEGInstPrinter(const MCAsmInfo &MAI, const MCInstrInfo &MII,
+  PIKAInstPrinter(const MCAsmInfo &MAI, const MCInstrInfo &MII,
                  const MCRegisterInfo &MRI)
       : MCInstPrinter(MAI, MII, MRI) {}
 

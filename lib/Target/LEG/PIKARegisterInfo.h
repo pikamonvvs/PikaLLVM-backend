@@ -1,4 +1,4 @@
-//===-- LEGRegisterInfo.h - LEG Register Information Impl ---*- C++ -*-===//
+//===-- PIKARegisterInfo.h - PIKA Register Information Impl ---*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,25 +7,25 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains the LEG implementation of the MRegisterInfo class.
+// This file contains the PIKA implementation of the MRegisterInfo class.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGREGISTERINFO_H
-#define LEGREGISTERINFO_H
+#ifndef PIKAREGISTERINFO_H
+#define PIKAREGISTERINFO_H
 
 #include "llvm/Target/TargetRegisterInfo.h"
 
 #define GET_REGINFO_HEADER
-#include "LEGGenRegisterInfo.inc"
+#include "PIKAGenRegisterInfo.inc"
 
 namespace llvm {
 
 class TargetInstrInfo;
 
-struct LEGRegisterInfo : public LEGGenRegisterInfo {
+struct PIKARegisterInfo : public PIKAGenRegisterInfo {
 public:
-  LEGRegisterInfo();
+  PIKARegisterInfo();
 
   /// Code Generation virtual methods...
   const uint16_t *getCalleeSavedRegs(const MachineFunction *MF = 0) const

@@ -1,4 +1,4 @@
-//===-- LEGMCAsmInfo.h - LEG asm properties --------------------*- C++ -*--===//
+//===-- PIKAMCAsmInfo.h - PIKA asm properties --------------------*- C++ -*--===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,12 +7,12 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains the declaration of the LEGMCAsmInfo class.
+// This file contains the declaration of the PIKAMCAsmInfo class.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGTARGETASMINFO_H
-#define LEGTARGETASMINFO_H
+#ifndef PIKATARGETASMINFO_H
+#define PIKATARGETASMINFO_H
 
 #include "llvm/MC/MCAsmInfoELF.h"
 
@@ -21,11 +21,11 @@ class StringRef;
 class Target;
 class Triple;
 
-class LEGMCAsmInfo : public MCAsmInfoELF {
+class PIKAMCAsmInfo : public MCAsmInfoELF {
   virtual void anchor();
 
 public:
-  explicit LEGMCAsmInfo(const Triple &TT);
+  explicit PIKAMCAsmInfo(const Triple &TT);
 };
 
 } // namespace llvm
