@@ -290,8 +290,8 @@ StringRef MCSymbolRefExpr::getVariantKindName(VariantKind Kind) {
   case VK_Mips_PCREL_HI16: return "PCREL_HI16";
   case VK_Mips_PCREL_LO16: return "PCREL_LO16";
   case VK_COFF_IMGREL32: return "IMGREL";
-  case VK_LEG_LO: return "LEG_LO";
-  case VK_LEG_HI: return "LEG_HI";
+  case VK_PIKA_LO: return "PIKA_LO";
+  case VK_PIKA_HI: return "PIKA_HI";
   case VK_Hexagon_PCREL: return "PCREL";
   case VK_Hexagon_LO16: return "LO16";
   case VK_Hexagon_HI16: return "HI16";
@@ -401,8 +401,8 @@ MCSymbolRefExpr::getVariantKindForName(StringRef Name) {
     .Case("tlsldo", VK_ARM_TLSLDO)
     .Case("tlscall", VK_ARM_TLSCALL)
     .Case("tlsdesc", VK_ARM_TLSDESC)
-    .Case("LEG_LO", VK_LEG_LO)
-    .Case("LEG_HI", VK_LEG_HI)
+    .Case("PIKA_LO", VK_PIKA_LO)
+    .Case("PIKA_HI", VK_PIKA_HI)
     .Default(VK_Invalid);
 }
 

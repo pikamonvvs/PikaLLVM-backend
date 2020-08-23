@@ -26,7 +26,7 @@ subdirectories =
  BPF
  CppBackend
  Hexagon
- LEG
+ PIKA
  MSP430
  NVPTX
  Mips

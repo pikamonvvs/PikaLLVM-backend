@@ -309,7 +309,7 @@ enum {
   EM_COOL          = 217, // iCelero CoolEngine
   EM_NORC          = 218, // Nanoradio Optimized RISC
   EM_CSR_KALIMBA   = 219, // CSR Kalimba architecture family
-  EM_LEG           = 220,
+  EM_PIKA          = 220,
   EM_AMDGPU        = 224, // AMD GPU architecture
 
   // A request has been made to the maintainer of the official registry for
