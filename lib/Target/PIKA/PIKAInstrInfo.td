@@ -31,7 +31,7 @@ multiclass ALUInst<bits<5> opcode, string opstr, SDNode opnode> {
     let Inst{25-22} = rd;
     let Inst{21-18} = rs;
     let Inst{17-14} = rt;
-    let Inst{13-0} = 0b000000000000;
+    let Inst{13-0} = 0;
   }
   def ri : PIKAInst<(outs GRRegs:$rd),
                    (ins GRRegs:$rs, i32imm:$imm),
@@ -51,7 +51,7 @@ multiclass ALUInst<bits<5> opcode, string opstr, SDNode opnode> {
 defm ADD  : ALUInst<0b00000, "add", add>;
 defm SUB  : ALUInst<0b00001, "sub", sub>;
 defm MUL  : ALUInst<0b00010, "mul", mul>;
-defm DIV  : ALUInst<0b00011, "div", div>;
+defm DIV  : ALUInst<0b00011, "div", udiv>;
 
 defm AND  : ALUInst<0b00100, "and", and>;
 defm OR   : ALUInst<0b00101, "or ", or>;
@@ -59,7 +59,7 @@ defm XOR  : ALUInst<0b00110, "xor", xor>;
 
 defm SHL  : ALUInst<0b01000, "shl", shl>;
 defm SHR  : ALUInst<0b01001, "shr", srl>;
-defm ASR  : ALUInst<0b01010, "asr", asr>;
+defm ASR  : ALUInst<0b01010, "asr", sra>;
 
 //===----------------------------------------------------------------------===//
 // Mov Instructions
@@ -73,7 +73,7 @@ def MOVrr : PIKAInst<(outs GRRegs:$rd), (ins GRRegs:$rs),
   let Inst{26} = 0b0;
   let Inst{25-22} = rd;
   let Inst{21-18} = rs;
-  let Inst{17-0} = 0b000000000000000000;
+  let Inst{17-0} = 0;
 }
 
 //===----------------------------------------------------------------------===//
@@ -85,7 +85,7 @@ class MOVi<bits<5> opcode, string opstr, dag ins, list<dag>pattern>
               !strconcat(opstr, " $rd, $imm"), pattern> {
   bits<5> opcode;
   bits<4> rd;
-  bits<16> imm;
+  bits<18> imm;
   let Inst{31-27} = opcode;
   let Inst{26} = 0b1;
   let Inst{25-22} = rd;
@@ -113,13 +113,13 @@ def : Pattern<(i32 (load_sym tglobaladdr:$addr)), [(MOVri $addr)]>;
 
 def CMP : PIKAInst<(outs), (ins GRRegs:$rs, GRRegs:$rt),
                     "cmp $rs, $rt", []> {
-  bits<5> rs;
-  bits<5> rt;
+  bits<4> rs;
+  bits<4> rt;
   let Inst{31-26} = 0b100000;
   let Inst{25-22} = 0b0000;
   let Inst{21-18} = rs;
   let Inst{17-14} = rt;
-  let Inst{13-0} = 0b00000000000000;
+  let Inst{13-0} = 0;
 
   let Defs = [CPSR];
 }
@@ -134,7 +134,7 @@ let isTerminator = 1, isBranch = 1, isBarrier = 1 in {
     bits<22> md;
     let Inst{31-27} = 0b10001;
     let Inst{26} = 0b0;
-    let Inst{25-22} = 0b0000;
+    let Inst{25-22} = 0;
     let Inst{21-0} = md;
   }
 }
@@ -179,10 +179,10 @@ let isCall = 1, Defs = [LR], Uses = [SP] in {
   def CALL : PIKAInst<(outs), (ins GRRegs:$rs),
                       "call $rs",
                       [(pika_call i32:$rs)]> {
-    bits<5> rs;
+    bits<4> rs;
     let Inst{31-26} = 0b100110;
     let Inst{25-22} = rs;
-    let Inst{21-0} = 0b0000000000000000000000;
+    let Inst{21-0} = 0;
   }
 }
 
@@ -194,7 +194,7 @@ let isTerminator = 1, isReturn = 1, isBarrier = 1, Uses = [LR] in {
   def RET : PIKAInst<(outs), (ins variable_ops),
                     "ret",  [(PIKARetFlag)]> {
     let Inst{31-26} = 0b100111;
-    let Inst{25-0} = 0b00000000000000000000000000;
+    let Inst{25-0} = 0;
   }
 }
 
