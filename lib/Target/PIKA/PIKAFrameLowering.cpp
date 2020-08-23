@@ -1,4 +1,4 @@
-//===-- LEGFrameLowering.cpp - Frame info for LEG Target --------------===//
+//===-- PIKAFrameLowering.cpp - Frame info for PIKA Target --------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,14 +7,14 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains LEG frame information that doesn't fit anywhere else
+// This file contains PIKA frame information that doesn't fit anywhere else
 // cleanly...
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGFrameLowering.h"
-#include "LEG.h"
-#include "LEGInstrInfo.h"
+#include "PIKAFrameLowering.h"
+#include "PIKA.h"
+#include "PIKAInstrInfo.h"
 #include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
@@ -31,19 +31,19 @@
 using namespace llvm;
 
 //===----------------------------------------------------------------------===//
-// LEGFrameLowering:
+// PIKAFrameLowering:
 //===----------------------------------------------------------------------===//
-LEGFrameLowering::LEGFrameLowering()
+PIKAFrameLowering::PIKAFrameLowering()
     : TargetFrameLowering(TargetFrameLowering::StackGrowsDown, 4, 0) {
   // Do nothing
 }
 
-bool LEGFrameLowering::hasFP(const MachineFunction &MF) const {
+bool PIKAFrameLowering::hasFP(const MachineFunction &MF) const {
   return MF.getTarget().Options.DisableFramePointerElim(MF) ||
          MF.getFrameInfo()->hasVarSizedObjects();
 }
 
-uint64_t LEGFrameLowering::computeStackSize(MachineFunction &MF) const {
+uint64_t PIKAFrameLowering::computeStackSize(MachineFunction &MF) const {
   MachineFrameInfo *MFI = MF.getFrameInfo();
   uint64_t StackSize = MFI->getStackSize();
   unsigned StackAlign = getStackAlignment();
@@ -68,14 +68,14 @@ static unsigned materializeOffset(MachineFunction &MF, MachineBasicBlock &MBB,
   } else {
     // The stack offset does not fit in the ADD/SUB instruction.
     // Materialize the offset using MOVLO/MOVHI.
-    unsigned OffsetReg = LEG::R4;
+    unsigned OffsetReg = PIKA::R6;
     unsigned OffsetLo = (unsigned)(Offset & 0xffff);
     unsigned OffsetHi = (unsigned)((Offset & 0xffff0000) >> 16);
-    BuildMI(MBB, MBBI, dl, TII.get(LEG::MOVLOi16), OffsetReg)
+    BuildMI(MBB, MBBI, dl, TII.get(PIKA::MOVriLO16), OffsetReg)
         .addImm(OffsetLo)
         .setMIFlag(MachineInstr::FrameSetup);
     if (OffsetHi) {
-      BuildMI(MBB, MBBI, dl, TII.get(LEG::MOVHIi16), OffsetReg)
+      BuildMI(MBB, MBBI, dl, TII.get(PIKA::MOVriHI16), OffsetReg)
           .addReg(OffsetReg)
           .addImm(OffsetHi)
           .setMIFlag(MachineInstr::FrameSetup);
@@ -84,7 +84,7 @@ static unsigned materializeOffset(MachineFunction &MF, MachineBasicBlock &MBB,
   }
 }
 
-void LEGFrameLowering::emitPrologue(MachineFunction &MF,
+void PIKAFrameLowering::emitPrologue(MachineFunction &MF,
                                     MachineBasicBlock &MBB) const {
   // Compute the stack size, to determine if we need a prologue at all.
   const TargetInstrInfo &TII = *MF.getSubtarget().getInstrInfo();
@@ -96,22 +96,22 @@ void LEGFrameLowering::emitPrologue(MachineFunction &MF,
   }
 
   // Adjust the stack pointer.
-  unsigned StackReg = LEG::SP;
+  unsigned StackReg = PIKA::SP;
   unsigned OffsetReg = materializeOffset(MF, MBB, MBBI, (unsigned)StackSize);
   if (OffsetReg) {
-    BuildMI(MBB, MBBI, dl, TII.get(LEG::SUBrr), StackReg)
+    BuildMI(MBB, MBBI, dl, TII.get(PIKA::SUBrr), StackReg)
         .addReg(StackReg)
         .addReg(OffsetReg)
         .setMIFlag(MachineInstr::FrameSetup);
   } else {
-    BuildMI(MBB, MBBI, dl, TII.get(LEG::SUBri), StackReg)
+    BuildMI(MBB, MBBI, dl, TII.get(PIKA::SUBri), StackReg)
         .addReg(StackReg)
         .addImm(StackSize)
         .setMIFlag(MachineInstr::FrameSetup);
   }
 }
 
-void LEGFrameLowering::emitEpilogue(MachineFunction &MF,
+void PIKAFrameLowering::emitEpilogue(MachineFunction &MF,
                                     MachineBasicBlock &MBB) const {
   // Compute the stack size, to determine if we need an epilogue at all.
   const TargetInstrInfo &TII = *MF.getSubtarget().getInstrInfo();
@@ -123,15 +123,15 @@ void LEGFrameLowering::emitEpilogue(MachineFunction &MF,
   }
 
   // Restore the stack pointer to what it was at the beginning of the function.
-  unsigned StackReg = LEG::SP;
+  unsigned StackReg = PIKA::SP;
   unsigned OffsetReg = materializeOffset(MF, MBB, MBBI, (unsigned)StackSize);
   if (OffsetReg) {
-    BuildMI(MBB, MBBI, dl, TII.get(LEG::ADDrr), StackReg)
+    BuildMI(MBB, MBBI, dl, TII.get(PIKA::ADDrr), StackReg)
         .addReg(StackReg)
         .addReg(OffsetReg)
         .setMIFlag(MachineInstr::FrameSetup);
   } else {
-    BuildMI(MBB, MBBI, dl, TII.get(LEG::ADDri), StackReg)
+    BuildMI(MBB, MBBI, dl, TII.get(PIKA::ADDri), StackReg)
         .addReg(StackReg)
         .addImm(StackSize)
         .setMIFlag(MachineInstr::FrameSetup);
@@ -140,11 +140,11 @@ void LEGFrameLowering::emitEpilogue(MachineFunction &MF,
 
 // This function eliminates ADJCALLSTACKDOWN, ADJCALLSTACKUP pseudo
 // instructions
-void LEGFrameLowering::eliminateCallFramePseudoInstr(
+void PIKAFrameLowering::eliminateCallFramePseudoInstr(
     MachineFunction &MF, MachineBasicBlock &MBB,
     MachineBasicBlock::iterator I) const {
-  if (I->getOpcode() == LEG::ADJCALLSTACKUP ||
-      I->getOpcode() == LEG::ADJCALLSTACKDOWN) {
+  if (I->getOpcode() == PIKA::ADJCALLSTACKUP ||
+      I->getOpcode() == PIKA::ADJCALLSTACKDOWN) {
     MBB.erase(I);
   }
   return;

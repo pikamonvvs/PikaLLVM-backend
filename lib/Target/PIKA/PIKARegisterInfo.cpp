@@ -1,4 +1,4 @@
-//===-- LEGRegisterInfo.cpp - LEG Register Information ----------------===//
+//===-- PIKARegisterInfo.cpp - PIKA Register Information ----------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,15 +7,15 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains the LEG implementation of the MRegisterInfo class.
+// This file contains the PIKA implementation of the MRegisterInfo class.
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGRegisterInfo.h"
-#include "LEG.h"
-#include "LEGFrameLowering.h"
-#include "LEGInstrInfo.h"
-#include "LEGMachineFunctionInfo.h"
+#include "PIKARegisterInfo.h"
+#include "PIKA.h"
+#include "PIKAFrameLowering.h"
+#include "PIKAInstrInfo.h"
+#include "PIKAMachineFunctionInfo.h"
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/CodeGen/MachineFrameInfo.h"
@@ -35,48 +35,49 @@
 #include "llvm/Target/TargetOptions.h"
 
 #define GET_REGINFO_TARGET_DESC
-#include "LEGGenRegisterInfo.inc"
+#include "PIKAGenRegisterInfo.inc"
 
 using namespace llvm;
 
-LEGRegisterInfo::LEGRegisterInfo() : LEGGenRegisterInfo(LEG::LR) {}
+PIKARegisterInfo::PIKARegisterInfo() : PIKAGenRegisterInfo(PIKA::LR) {}
 
 const uint16_t *
-LEGRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
-  static const uint16_t CalleeSavedRegs[] = { LEG::R4, LEG::R5, LEG::R6,
-                                              LEG::R7, LEG::R8, LEG::R9,
+PIKARegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
+  static const uint16_t CalleeSavedRegs[] = { PIKA::R6,  PIKA::R7,  PIKA::R8,
+                                              PIKA::R9,  PIKA::R10, PIKA::R11,
+                                              PIKA::R12, PIKA::R13,
                                               0 };
   return CalleeSavedRegs;
 }
 
-BitVector LEGRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
+BitVector PIKARegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   BitVector Reserved(getNumRegs());
 
-  Reserved.set(LEG::SP);
-  Reserved.set(LEG::LR);
+  Reserved.set(PIKA::SP);
+  Reserved.set(PIKA::LR);
   return Reserved;
 }
 
-const uint32_t *LEGRegisterInfo::getCallPreservedMask(const MachineFunction &MF,
+const uint32_t *PIKARegisterInfo::getCallPreservedMask(const MachineFunction &MF,
                                                       CallingConv::ID) const {
   return CC_Save_RegMask;
 }
 
 bool
-LEGRegisterInfo::requiresRegisterScavenging(const MachineFunction &MF) const {
+PIKARegisterInfo::requiresRegisterScavenging(const MachineFunction &MF) const {
   return true;
 }
 
 bool
-LEGRegisterInfo::trackLivenessAfterRegAlloc(const MachineFunction &MF) const {
+PIKARegisterInfo::trackLivenessAfterRegAlloc(const MachineFunction &MF) const {
   return true;
 }
 
-bool LEGRegisterInfo::useFPForScavengingIndex(const MachineFunction &MF) const {
+bool PIKARegisterInfo::useFPForScavengingIndex(const MachineFunction &MF) const {
   return false;
 }
 
-void LEGRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
+void PIKARegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
                                           int SPAdj, unsigned FIOperandNum,
                                           RegScavenger *RS) const {
   MachineInstr &MI = *II;
@@ -91,8 +92,8 @@ void LEGRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   default:
     // Not supported yet.
     return;
-  case LEG::LDR:
-  case LEG::STR:
+  case PIKA::LD:
+  case PIKA::STR:
     ImmOpIdx = FIOperandNum + 1;
     break;
   }
@@ -100,10 +101,10 @@ void LEGRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   // FIXME: check the size of offset.
   MachineOperand &ImmOp = MI.getOperand(ImmOpIdx);
   int Offset = MFI->getObjectOffset(FI) + MFI->getStackSize() + ImmOp.getImm();
-  FIOp.ChangeToRegister(LEG::SP, false);
+  FIOp.ChangeToRegister(PIKA::SP, false);
   ImmOp.setImm(Offset);
 }
 
-unsigned LEGRegisterInfo::getFrameRegister(const MachineFunction &MF) const {
-  return LEG::SP;
+unsigned PIKARegisterInfo::getFrameRegister(const MachineFunction &MF) const {
+  return PIKA::SP;
 }

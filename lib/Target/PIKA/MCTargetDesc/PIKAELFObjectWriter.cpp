@@ -1,4 +1,4 @@
-//===-- LEGELFObjectWriter.cpp - LEG ELF Writer ---------------------------===//
+//===-- PIKAELFObjectWriter.cpp - PIKA ELF Writer ---------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,8 +7,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "MCTargetDesc/LEGMCTargetDesc.h"
-#include "MCTargetDesc/LEGFixupKinds.h"
+#include "MCTargetDesc/PIKAMCTargetDesc.h"
+#include "MCTargetDesc/PIKAFixupKinds.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/MC/MCELFObjectWriter.h"
@@ -22,18 +22,18 @@
 using namespace llvm;
 
 namespace {
-  class LEGELFObjectWriter : public MCELFObjectTargetWriter {
+  class PIKAELFObjectWriter : public MCELFObjectTargetWriter {
   public:
-    LEGELFObjectWriter(uint8_t OSABI);
+    PIKAELFObjectWriter(uint8_t OSABI);
 
-    virtual ~LEGELFObjectWriter();
+    virtual ~PIKAELFObjectWriter();
 
     unsigned GetRelocType(const MCValue &Target, const MCFixup &Fixup,
                           bool IsPCRel) const override;
   };
 }
 
-unsigned LEGELFObjectWriter::GetRelocType(const MCValue &Target,
+unsigned PIKAELFObjectWriter::GetRelocType(const MCValue &Target,
                                           const MCFixup &Fixup,
                                           bool IsPCRel) const {
   if (!IsPCRel) {
@@ -44,23 +44,23 @@ unsigned LEGELFObjectWriter::GetRelocType(const MCValue &Target,
   switch ((unsigned)Fixup.getKind()) {
   default:
     llvm_unreachable("Unimplemented");
-  case LEG::fixup_leg_mov_hi16_pcrel:
+  case PIKA::fixup_pika_mov_hi16_pcrel:
     Type = ELF::R_ARM_MOVT_PREL;
     break;
-  case LEG::fixup_leg_mov_lo16_pcrel:
+  case PIKA::fixup_pika_mov_lo16_pcrel:
     Type = ELF::R_ARM_MOVW_PREL_NC;
     break;
   }
   return Type;
 }
 
-LEGELFObjectWriter::LEGELFObjectWriter(uint8_t OSABI)
-    : MCELFObjectTargetWriter(/*Is64Bit*/ false, OSABI, /*ELF::EM_LEG*/ ELF::EM_ARM,
+PIKAELFObjectWriter::PIKAELFObjectWriter(uint8_t OSABI)
+    : MCELFObjectTargetWriter(/*Is64Bit*/ false, OSABI, /*ELF::EM_PIKA*/ ELF::EM_ARM,
                               /*HasRelocationAddend*/ false) {}
 
-LEGELFObjectWriter::~LEGELFObjectWriter() {}
+PIKAELFObjectWriter::~PIKAELFObjectWriter() {}
 
-MCObjectWriter *llvm::createLEGELFObjectWriter(raw_pwrite_stream &OS, uint8_t OSABI) {
-  MCELFObjectTargetWriter *MOTW = new LEGELFObjectWriter(OSABI);
+MCObjectWriter *llvm::createPIKAELFObjectWriter(raw_pwrite_stream &OS, uint8_t OSABI) {
+  MCELFObjectTargetWriter *MOTW = new PIKAELFObjectWriter(OSABI);
   return createELFObjectWriter(MOTW, OS, /*IsLittleEndian=*/true);
 }

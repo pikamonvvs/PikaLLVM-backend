@@ -1,4 +1,4 @@
-//===-- LEGISelLowering.cpp - LEG DAG Lowering Implementation ---------===//
+//===-- PIKAISelLowering.cpp - PIKA DAG Lowering Implementation ---------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,15 +7,15 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file implements the LEGTargetLowering class.
+// This file implements the PIKATargetLowering class.
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGISelLowering.h"
-#include "LEG.h"
-#include "LEGMachineFunctionInfo.h"
-#include "LEGSubtarget.h"
-#include "LEGTargetMachine.h"
+#include "PIKAISelLowering.h"
+#include "PIKA.h"
+#include "PIKAMachineFunctionInfo.h"
+#include "PIKASubtarget.h"
+#include "PIKATargetMachine.h"
 #include "llvm/CodeGen/CallingConvLower.h"
 #include "llvm/CodeGen/MachineFrameInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
@@ -38,26 +38,26 @@
 
 using namespace llvm;
 
-const char *LEGTargetLowering::getTargetNodeName(unsigned Opcode) const {
+const char *PIKATargetLowering::getTargetNodeName(unsigned Opcode) const {
   switch (Opcode) {
   default:
     return NULL;
-  case LEGISD::RET_FLAG: return "RetFlag";
-  case LEGISD::LOAD_SYM: return "LOAD_SYM";
-  case LEGISD::MOVEi32:  return "MOVEi32";
-  case LEGISD::CALL:     return "CALL";
+  case PIKAISD::RET_FLAG: return "RetFlag";
+  case PIKAISD::LOAD_SYM: return "LOAD_SYM";
+  case PIKAISD::MOVEi32:  return "MOVEi32";
+  case PIKAISD::CALL:     return "CALL";
   }
 }
 
-LEGTargetLowering::LEGTargetLowering(LEGTargetMachine &LEGTM)
-    : TargetLowering(LEGTM), Subtarget(*LEGTM.getSubtargetImpl()) {
+PIKATargetLowering::PIKATargetLowering(PIKATargetMachine &PIKATM)
+    : TargetLowering(PIKATM), Subtarget(*PIKATM.getSubtargetImpl()) {
   // Set up the register classes.
-  addRegisterClass(MVT::i32, &LEG::GRRegsRegClass);
+  addRegisterClass(MVT::i32, &PIKA::GRRegsRegClass);
 
   // Compute derived properties from the register classes
   computeRegisterProperties(Subtarget.getRegisterInfo());
 
-  setStackPointerRegisterToSaveRestore(LEG::SP);
+  setStackPointerRegisterToSaveRestore(PIKA::SP);
 
   setSchedulingPreference(Sched::Source);
 
@@ -65,7 +65,7 @@ LEGTargetLowering::LEGTargetLowering(LEGTargetMachine &LEGTM)
   setOperationAction(ISD::GlobalAddress, MVT::i32, Custom);
 }
 
-SDValue LEGTargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
+SDValue PIKATargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
   switch (Op.getOpcode()) {
   default:
     llvm_unreachable("Unimplemented operand");
@@ -74,27 +74,27 @@ SDValue LEGTargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
   }
 }
 
-SDValue LEGTargetLowering::LowerGlobalAddress(SDValue Op, SelectionDAG& DAG) const
+SDValue PIKATargetLowering::LowerGlobalAddress(SDValue Op, SelectionDAG& DAG) const
 {
   EVT VT = Op.getValueType();
   GlobalAddressSDNode *GlobalAddr = cast<GlobalAddressSDNode>(Op.getNode());
   SDValue TargetAddr =
       DAG.getTargetGlobalAddress(GlobalAddr->getGlobal(), Op, MVT::i32);
-  return DAG.getNode(LEGISD::LOAD_SYM, Op, VT, TargetAddr);
+  return DAG.getNode(PIKAISD::LOAD_SYM, Op, VT, TargetAddr);
 }
 
 //===----------------------------------------------------------------------===//
 //                      Calling Convention Implementation
 //===----------------------------------------------------------------------===//
 
-#include "LEGGenCallingConv.inc"
+#include "PIKAGenCallingConv.inc"
 
 //===----------------------------------------------------------------------===//
 //                  Call Calling Convention Implementation
 //===----------------------------------------------------------------------===//
 
-/// LEG call implementation
-SDValue LEGTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
+/// PIKA call implementation
+SDValue PIKATargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
                                      SmallVectorImpl<SDValue> &InVals) const {
   SelectionDAG &DAG = CLI.DAG;
   SDLoc &Loc = CLI.DL;
@@ -116,7 +116,7 @@ SDValue LEGTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   SmallVector<CCValAssign, 16> ArgLocs;
   CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), ArgLocs,
                  *DAG.getContext());
-  CCInfo.AnalyzeCallOperands(Outs, CC_LEG);
+  CCInfo.AnalyzeCallOperands(Outs, CC_PIKA);
 
   // Get the size of the outgoing arguments stack space requirement.
   const unsigned NumBytes = CCInfo.getNextStackOffset();
@@ -144,7 +144,7 @@ SDValue LEGTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
     assert(VA.isMemLoc() &&
            "Only support passing arguments through registers or via the stack");
 
-    SDValue StackPtr = DAG.getRegister(LEG::SP, MVT::i32);
+    SDValue StackPtr = DAG.getRegister(PIKA::SP, MVT::i32);
     SDValue PtrOff = DAG.getIntPtrConstant(VA.getLocMemOffset(), Loc);
     PtrOff = DAG.getNode(ISD::ADD, Loc, MVT::i32, StackPtr, PtrOff);
     MemOpChains.push_back(DAG.getStore(Chain, Loc, Arg, PtrOff,
@@ -196,7 +196,7 @@ SDValue LEGTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   SDVTList NodeTys = DAG.getVTList(MVT::Other, MVT::Glue);
 
   // Returns a chain and a flag for retval copy to use.
-  Chain = DAG.getNode(LEGISD::CALL, Loc, NodeTys, Ops);
+  Chain = DAG.getNode(PIKAISD::CALL, Loc, NodeTys, Ops);
   InFlag = Chain.getValue(1);
 
   Chain = DAG.getCALLSEQ_END(Chain, DAG.getIntPtrConstant(NumBytes, Loc, true),
@@ -211,7 +211,7 @@ SDValue LEGTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
                          InVals);
 }
 
-SDValue LEGTargetLowering::LowerCallResult(
+SDValue PIKATargetLowering::LowerCallResult(
     SDValue Chain, SDValue InGlue, CallingConv::ID CallConv, bool isVarArg,
     const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc dl, SelectionDAG &DAG,
     SmallVectorImpl<SDValue> &InVals) const {
@@ -222,7 +222,7 @@ SDValue LEGTargetLowering::LowerCallResult(
   CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), RVLocs,
                  *DAG.getContext());
 
-  CCInfo.AnalyzeCallResult(Ins, RetCC_LEG);
+  CCInfo.AnalyzeCallResult(Ins, RetCC_PIKA);
 
   // Copy all of the result registers out of their specified physreg.
   for (auto &Loc : RVLocs) {
@@ -239,8 +239,8 @@ SDValue LEGTargetLowering::LowerCallResult(
 //             Formal Arguments Calling Convention Implementation
 //===----------------------------------------------------------------------===//
 
-/// LEG formal arguments implementation
-SDValue LEGTargetLowering::LowerFormalArguments(
+/// PIKA formal arguments implementation
+SDValue PIKATargetLowering::LowerFormalArguments(
     SDValue Chain, CallingConv::ID CallConv, bool isVarArg,
     const SmallVectorImpl<ISD::InputArg> &Ins, SDLoc dl, SelectionDAG &DAG,
     SmallVectorImpl<SDValue> &InVals) const {
@@ -254,7 +254,7 @@ SDValue LEGTargetLowering::LowerFormalArguments(
   CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), ArgLocs,
                  *DAG.getContext());
 
-  CCInfo.AnalyzeFormalArguments(Ins, CC_LEG);
+  CCInfo.AnalyzeFormalArguments(Ins, CC_PIKA);
 
   for (auto &VA : ArgLocs) {
     if (VA.isRegLoc()) {
@@ -262,7 +262,7 @@ SDValue LEGTargetLowering::LowerFormalArguments(
       EVT RegVT = VA.getLocVT();
       assert(RegVT.getSimpleVT().SimpleTy == MVT::i32 &&
              "Only support MVT::i32 register passing");
-      const unsigned VReg = RegInfo.createVirtualRegister(&LEG::GRRegsRegClass);
+      const unsigned VReg = RegInfo.createVirtualRegister(&PIKA::GRRegsRegClass);
       RegInfo.addLiveIn(VA.getLocReg(), VReg);
       SDValue ArgIn = DAG.getCopyFromReg(Chain, dl, VReg, RegVT);
 
@@ -294,12 +294,12 @@ SDValue LEGTargetLowering::LowerFormalArguments(
 //               Return Value Calling Convention Implementation
 //===----------------------------------------------------------------------===//
 
-bool LEGTargetLowering::CanLowerReturn(
+bool PIKATargetLowering::CanLowerReturn(
     CallingConv::ID CallConv, MachineFunction &MF, bool isVarArg,
     const SmallVectorImpl<ISD::OutputArg> &Outs, LLVMContext &Context) const {
   SmallVector<CCValAssign, 16> RVLocs;
   CCState CCInfo(CallConv, isVarArg, MF, RVLocs, Context);
-  if (!CCInfo.CheckReturn(Outs, RetCC_LEG)) {
+  if (!CCInfo.CheckReturn(Outs, RetCC_PIKA)) {
     return false;
   }
   if (CCInfo.getNextStackOffset() != 0 && isVarArg) {
@@ -309,7 +309,7 @@ bool LEGTargetLowering::CanLowerReturn(
 }
 
 SDValue
-LEGTargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
+PIKATargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
                                bool isVarArg,
                                const SmallVectorImpl<ISD::OutputArg> &Outs,
                                const SmallVectorImpl<SDValue> &OutVals,
@@ -326,7 +326,7 @@ LEGTargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
   CCState CCInfo(CallConv, isVarArg, DAG.getMachineFunction(), RVLocs,
                  *DAG.getContext());
 
-  CCInfo.AnalyzeReturn(Outs, RetCC_LEG);
+  CCInfo.AnalyzeReturn(Outs, RetCC_PIKA);
 
   SDValue Flag;
   SmallVector<SDValue, 4> RetOps(1, Chain);
@@ -349,5 +349,5 @@ LEGTargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
     RetOps.push_back(Flag);
   }
 
-  return DAG.getNode(LEGISD::RET_FLAG, dl, MVT::Other, RetOps);
+  return DAG.getNode(PIKAISD::RET_FLAG, dl, MVT::Other, RetOps);
 }

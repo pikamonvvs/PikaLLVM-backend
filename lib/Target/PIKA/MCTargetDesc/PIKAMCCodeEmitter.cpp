@@ -1,4 +1,4 @@
-//===-- LEG/LEGMCCodeEmitter.cpp - Convert LEG code to machine code -------===//
+//===-- PIKA/PIKAMCCodeEmitter.cpp - Convert PIKA code to machine code -------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,13 +7,13 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file implements the LEGMCCodeEmitter class.
+// This file implements the PIKAMCCodeEmitter class.
 //
 //===----------------------------------------------------------------------===//
 
 #define DEBUG_TYPE "mccodeemitter"
-#include "MCTargetDesc/LEGMCTargetDesc.h"
-#include "MCTargetDesc/LEGFixupKinds.h"
+#include "MCTargetDesc/PIKAMCTargetDesc.h"
+#include "MCTargetDesc/PIKAFixupKinds.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/MC/MCCodeEmitter.h"
@@ -31,17 +31,17 @@ using namespace llvm;
 STATISTIC(MCNumEmitted, "Number of MC instructions emitted.");
 
 namespace {
-class LEGMCCodeEmitter : public MCCodeEmitter {
-  LEGMCCodeEmitter(const LEGMCCodeEmitter &) = delete;
-  void operator=(const LEGMCCodeEmitter &) = delete;
+class PIKAMCCodeEmitter : public MCCodeEmitter {
+  PIKAMCCodeEmitter(const PIKAMCCodeEmitter &) = delete;
+  void operator=(const PIKAMCCodeEmitter &) = delete;
   const MCInstrInfo &MCII;
   const MCContext &CTX;
 
 public:
-  LEGMCCodeEmitter(const MCInstrInfo &mcii, MCContext &ctx)
+  PIKAMCCodeEmitter(const MCInstrInfo &mcii, MCContext &ctx)
       : MCII(mcii), CTX(ctx) {}
 
-  ~LEGMCCodeEmitter() {}
+  ~PIKAMCCodeEmitter() {}
 
   // getBinaryCodeForInstr - TableGen'erated function for getting the
   // binary encoding for an instruction.
@@ -76,15 +76,15 @@ public:
 
 } // end anonymous namespace
 
-MCCodeEmitter *llvm::createLEGMCCodeEmitter(const MCInstrInfo &MCII,
+MCCodeEmitter *llvm::createPIKAMCCodeEmitter(const MCInstrInfo &MCII,
                                             const MCRegisterInfo &MRI,
                                             MCContext &Ctx) {
-  return new LEGMCCodeEmitter(MCII, Ctx);
+  return new PIKAMCCodeEmitter(MCII, Ctx);
 }
 
 /// getMachineOpValue - Return binary encoding of operand. If the machine
 /// operand requires relocation, record the relocation and return zero.
-unsigned LEGMCCodeEmitter::getMachineOpValue(const MCInst &MI,
+unsigned PIKAMCCodeEmitter::getMachineOpValue(const MCInst &MI,
                                              const MCOperand &MO,
                                              SmallVectorImpl<MCFixup> &Fixups,
                                              const MCSubtargetInfo &STI) const {
@@ -112,12 +112,12 @@ unsigned LEGMCCodeEmitter::getMachineOpValue(const MCInst &MI,
   switch (cast<MCSymbolRefExpr>(Expr)->getKind()) {
   default:
     llvm_unreachable("Unknown fixup kind!");
-  case MCSymbolRefExpr::VK_LEG_LO: {
-    FixupKind = LEG::fixup_leg_mov_lo16_pcrel;
+  case MCSymbolRefExpr::VK_PIKA_LO: {
+    FixupKind = PIKA::fixup_pika_mov_lo16_pcrel;
     break;
   }
-  case MCSymbolRefExpr::VK_LEG_HI: {
-    FixupKind = LEG::fixup_leg_mov_hi16_pcrel;
+  case MCSymbolRefExpr::VK_PIKA_HI: {
+    FixupKind = PIKA::fixup_pika_mov_hi16_pcrel;
     break;
   }
   }
@@ -126,7 +126,7 @@ unsigned LEGMCCodeEmitter::getMachineOpValue(const MCInst &MI,
   return 0;
 }
 
-unsigned LEGMCCodeEmitter::getMemSrcValue(const MCInst &MI, unsigned OpIdx,
+unsigned PIKAMCCodeEmitter::getMemSrcValue(const MCInst &MI, unsigned OpIdx,
                                           SmallVectorImpl<MCFixup> &Fixups,
                                           const MCSubtargetInfo &STI) const {
   unsigned Bits = 0;
@@ -138,7 +138,7 @@ unsigned LEGMCCodeEmitter::getMemSrcValue(const MCInst &MI, unsigned OpIdx,
   return Bits;
 }
 
-void LEGMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
+void PIKAMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
                                          SmallVectorImpl<MCFixup> &Fixups,
                                          const MCSubtargetInfo &STI) const {
   const MCInstrDesc &Desc = MCII.get(MI.getOpcode());
@@ -152,4 +152,4 @@ void LEGMCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
   ++MCNumEmitted;
 }
 
-#include "LEGGenMCCodeEmitter.inc"
+#include "PIKAGenMCCodeEmitter.inc"

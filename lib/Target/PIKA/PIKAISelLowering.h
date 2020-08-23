@@ -1,4 +1,4 @@
-//===-- LEGISelLowering.h - LEG DAG Lowering Interface ------*- C++ -*-===//
+//===-- PIKAISelLowering.h - PIKA DAG Lowering Interface ------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,25 +7,25 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file defines the interfaces that LEG uses to lower LLVM code into a
+// This file defines the interfaces that PIKA uses to lower LLVM code into a
 // selection DAG.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGISELLOWERING_H
-#define LEGISELLOWERING_H
+#ifndef PIKAISELLOWERING_H
+#define PIKAISELLOWERING_H
 
-#include "LEG.h"
+#include "PIKA.h"
 #include "llvm/CodeGen/SelectionDAG.h"
 #include "llvm/Target/TargetLowering.h"
 
 namespace llvm {
 
 // Forward delcarations
-class LEGSubtarget;
-class LEGTargetMachine;
+class PIKASubtarget;
+class PIKATargetMachine;
 
-namespace LEGISD {
+namespace PIKAISD {
 enum NodeType {
   // Start the numbering where the builtin ops and target ops leave off.
   FIRST_NUMBER = ISD::BUILTIN_OP_END,
@@ -41,9 +41,9 @@ enum NodeType {
 //===--------------------------------------------------------------------===//
 // TargetLowering Implementation
 //===--------------------------------------------------------------------===//
-class LEGTargetLowering : public TargetLowering {
+class PIKATargetLowering : public TargetLowering {
 public:
-  explicit LEGTargetLowering(LEGTargetMachine &TM);
+  explicit PIKATargetLowering(PIKATargetMachine &TM);
 
   /// LowerOperation - Provide custom lowering hooks for some operations.
   virtual SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;
@@ -53,7 +53,7 @@ public:
   virtual const char *getTargetNodeName(unsigned Opcode) const override;
 
 private:
-  const LEGSubtarget &Subtarget;
+  const PIKASubtarget &Subtarget;
 
   SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,
                                bool isVarArg,
@@ -85,5 +85,5 @@ private:
 };
 }
 
-#endif // LEGISELLOWERING_H
+#endif // PIKAISELLOWERING_H
 

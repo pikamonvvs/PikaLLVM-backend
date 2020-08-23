@@ -1,4 +1,4 @@
-//===-- LEGBaseInfo.h - Top level definitions for LEG -------- --*- C++ -*-===//
+//===-- PIKABaseInfo.h - Top level definitions for PIKA -------- --*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -8,38 +8,38 @@
 //===----------------------------------------------------------------------===//
 //
 // This file contains small standalone helper functions and enum definitions for
-// the LEG target useful for the compiler back-end and the MC libraries.
+// the PIKA target useful for the compiler back-end and the MC libraries.
 // As such, it deliberately does not include references to LLVM core
 // code gen types, passes, etc..
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGBASEINFO_H
-#define LEGBASEINFO_H
+#ifndef PIKABASEINFO_H
+#define PIKABASEINFO_H
 
-#include "LEGMCTargetDesc.h"
+#include "PIKAMCTargetDesc.h"
 #include "llvm/Support/ErrorHandling.h"
 
 namespace llvm {
 
-/// LEGII - This namespace holds all of the target specific flags that
+/// PIKAII - This namespace holds all of the target specific flags that
 /// instruction info tracks.
 ///
-namespace LEGII {
+namespace PIKAII {
 
   /// Target Operand Flag enum.
   enum TOF {
     //===------------------------------------------------------------------===//
-    // LEG-Specific MachineOperand flags.
+    // PIKA-Specific MachineOperand flags.
 
     MO_NO_FLAG = 0,
 
     /// MO_LO16 - On a symbol operand, this represents a relocation containing
-    /// lower 16 bit of the address. Used only via movw instruction.
+    /// lower 16 bit of the address. Used only via movl instruction.
     MO_LO16 = 0x1,
 
     /// MO_HI16 - On a symbol operand, this represents a relocation containing
-    /// higher 16 bit of the address. Used only via movt instruction.
+    /// higher 16 bit of the address. Used only via movh instruction.
     MO_HI16 = 0x2,
 
     /// MO_OPTION_MASK - Most flags are mutually exclusive; this mask selects
@@ -52,7 +52,7 @@ namespace LEGII {
     // char").
     MO_UNUSED_MAXIMUM = 0xff
   };
-} // end namespace LEGII
+} // end namespace PIKAII
 
 } // end namespace llvm;
 

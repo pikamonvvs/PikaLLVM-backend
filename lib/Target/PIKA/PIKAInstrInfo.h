@@ -1,4 +1,4 @@
-//===-- LEGInstrInfo.h - LEG Instruction Information --------*- C++ -*-===//
+//===-- PIKAInstrInfo.h - PIKA Instruction Information --------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,33 +7,33 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains the LEG implementation of the TargetInstrInfo class.
+// This file contains the PIKA implementation of the TargetInstrInfo class.
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGINSTRUCTIONINFO_H
-#define LEGINSTRUCTIONINFO_H
+#ifndef PIKAINSTRUCTIONINFO_H
+#define PIKAINSTRUCTIONINFO_H
 
-#include "LEGRegisterInfo.h"
+#include "PIKARegisterInfo.h"
 #include "llvm/Target/TargetInstrInfo.h"
 
 #define GET_INSTRINFO_HEADER
-#include "LEGGenInstrInfo.inc"
+#include "PIKAGenInstrInfo.inc"
 
 namespace llvm {
 
-class LEGInstrInfo : public LEGGenInstrInfo {
-  const LEGRegisterInfo RI;
+class PIKAInstrInfo : public PIKAGenInstrInfo {
+  const PIKARegisterInfo RI;
   virtual void anchor();
 
 public:
-  LEGInstrInfo();
+  PIKAInstrInfo();
 
   /// getRegisterInfo - TargetInstrInfo is a superset of MRegister info.  As
   /// such, whenever a client has an instance of instruction info, it should
   /// always be able to get register info as well (through this method).
   ///
-  const LEGRegisterInfo &getRegisterInfo() const { return RI; }
+  const PIKARegisterInfo &getRegisterInfo() const { return RI; }
 
   /// isLoadFromStackSlot - If the specified machine instruction is a direct
   /// load from a stack slot, return the virtual or physical register number of

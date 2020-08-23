@@ -1,4 +1,4 @@
-//===-- LEGFrameLowering.h - Frame info for LEG Target ------*- C++ -*-===//
+//===-- PIKAFrameLowering.h - Frame info for PIKA Target ------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,23 +7,23 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains LEG frame information that doesn't fit anywhere else
+// This file contains PIKA frame information that doesn't fit anywhere else
 // cleanly...
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LEGFRAMEINFO_H
-#define LEGFRAMEINFO_H
+#ifndef PIKAFRAMEINFO_H
+#define PIKAFRAMEINFO_H
 
 #include "llvm/Target/TargetFrameLowering.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
-class LEGSubtarget;
+class PIKASubtarget;
 
-class LEGFrameLowering : public TargetFrameLowering {
+class PIKAFrameLowering : public TargetFrameLowering {
 public:
-  LEGFrameLowering();
+  PIKAFrameLowering();
 
   /// emitProlog/emitEpilog - These methods insert prolog and epilog code into
   /// the function.
@@ -46,5 +46,5 @@ private:
 };
 }
 
-#endif // LEGFRAMEINFO_H
+#endif // PIKAFRAMEINFO_H
 

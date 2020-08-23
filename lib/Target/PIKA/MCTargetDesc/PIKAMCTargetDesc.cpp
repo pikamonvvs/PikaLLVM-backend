@@ -1,4 +1,4 @@
-//===-- LEGMCTargetDesc.cpp - LEG Target Descriptions -----------------===//
+//===-- PIKAMCTargetDesc.cpp - PIKA Target Descriptions -----------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,13 +7,13 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file provides LEG specific target descriptions.
+// This file provides PIKA specific target descriptions.
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGMCTargetDesc.h"
-#include "InstPrinter/LEGInstPrinter.h"
-#include "LEGMCAsmInfo.h"
+#include "PIKAMCTargetDesc.h"
+#include "InstPrinter/PIKAInstPrinter.h"
+#include "PIKAMCAsmInfo.h"
 #include "llvm/MC/MCCodeGenInfo.h"
 #include "llvm/MC/MCInstrInfo.h"
 #include "llvm/MC/MCRegisterInfo.h"
@@ -24,40 +24,40 @@
 #include "llvm/Support/TargetRegistry.h"
 
 #define GET_INSTRINFO_MC_DESC
-#include "LEGGenInstrInfo.inc"
+#include "PIKAGenInstrInfo.inc"
 
 #define GET_SUBTARGETINFO_MC_DESC
-#include "LEGGenSubtargetInfo.inc"
+#include "PIKAGenSubtargetInfo.inc"
 
 #define GET_REGINFO_MC_DESC
-#include "LEGGenRegisterInfo.inc"
+#include "PIKAGenRegisterInfo.inc"
 
 using namespace llvm;
 
-static MCInstrInfo *createLEGMCInstrInfo() {
+static MCInstrInfo *createPIKAMCInstrInfo() {
   MCInstrInfo *X = new MCInstrInfo();
-  InitLEGMCInstrInfo(X);
+  InitPIKAMCInstrInfo(X);
   return X;
 }
 
-static MCRegisterInfo *createLEGMCRegisterInfo(const Triple &TT) {
+static MCRegisterInfo *createPIKAMCRegisterInfo(const Triple &TT) {
   MCRegisterInfo *X = new MCRegisterInfo();
-  InitLEGMCRegisterInfo(X, LEG::LR);
+  InitPIKAMCRegisterInfo(X, PIKA::LR);
   return X;
 }
 
-static MCSubtargetInfo *createLEGMCSubtargetInfo(const Triple &TT,
+static MCSubtargetInfo *createPIKAMCSubtargetInfo(const Triple &TT,
                                                  StringRef CPU,
                                                  StringRef FS) {
-  return createLEGMCSubtargetInfoImpl(TT, CPU, FS);
+  return createPIKAMCSubtargetInfoImpl(TT, CPU, FS);
 }
 
-static MCAsmInfo *createLEGMCAsmInfo(const MCRegisterInfo &MRI,
+static MCAsmInfo *createPIKAMCAsmInfo(const MCRegisterInfo &MRI,
                                      const Triple &TT) {
-  return new LEGMCAsmInfo(TT);
+  return new PIKAMCAsmInfo(TT);
 }
 
-static MCCodeGenInfo *createLEGMCCodeGenInfo(const Triple &TT, Reloc::Model RM,
+static MCCodeGenInfo *createPIKAMCCodeGenInfo(const Triple &TT, Reloc::Model RM,
                                              CodeModel::Model CM,
                                              CodeGenOpt::Level OL) {
   MCCodeGenInfo *X = new MCCodeGenInfo();
@@ -76,36 +76,36 @@ static MCCodeGenInfo *createLEGMCCodeGenInfo(const Triple &TT, Reloc::Model RM,
 }
 
 static MCInstPrinter *
-createLEGMCInstPrinter(const Triple &TT, unsigned SyntaxVariant,
+createPIKAMCInstPrinter(const Triple &TT, unsigned SyntaxVariant,
                        const MCAsmInfo &MAI, const MCInstrInfo &MII,
                        const MCRegisterInfo &MRI) {
-  return new LEGInstPrinter(MAI, MII, MRI);
+  return new PIKAInstPrinter(MAI, MII, MRI);
 }
 
 // Force static initialization.
-extern "C" void LLVMInitializeLEGTargetMC() {
+extern "C" void LLVMInitializePIKATargetMC() {
   // Register the MC asm info.
-  RegisterMCAsmInfoFn X(TheLEGTarget, createLEGMCAsmInfo);
+  RegisterMCAsmInfoFn X(ThePIKATarget, createPIKAMCAsmInfo);
 
   // Register the MC codegen info.
-  TargetRegistry::RegisterMCCodeGenInfo(TheLEGTarget, createLEGMCCodeGenInfo);
+  TargetRegistry::RegisterMCCodeGenInfo(ThePIKATarget, createPIKAMCCodeGenInfo);
 
   // Register the MC instruction info.
-  TargetRegistry::RegisterMCInstrInfo(TheLEGTarget, createLEGMCInstrInfo);
+  TargetRegistry::RegisterMCInstrInfo(ThePIKATarget, createPIKAMCInstrInfo);
 
   // Register the MC register info.
-  TargetRegistry::RegisterMCRegInfo(TheLEGTarget, createLEGMCRegisterInfo);
+  TargetRegistry::RegisterMCRegInfo(ThePIKATarget, createPIKAMCRegisterInfo);
 
   // Register the MC subtarget info.
-  TargetRegistry::RegisterMCSubtargetInfo(TheLEGTarget,
-                                          createLEGMCSubtargetInfo);
+  TargetRegistry::RegisterMCSubtargetInfo(ThePIKATarget,
+                                          createPIKAMCSubtargetInfo);
 
   // Register the MCInstPrinter
-  TargetRegistry::RegisterMCInstPrinter(TheLEGTarget, createLEGMCInstPrinter);
+  TargetRegistry::RegisterMCInstPrinter(ThePIKATarget, createPIKAMCInstPrinter);
 
   // Register the ASM Backend.
-  TargetRegistry::RegisterMCAsmBackend(TheLEGTarget, createLEGAsmBackend);
+  TargetRegistry::RegisterMCAsmBackend(ThePIKATarget, createPIKAAsmBackend);
 
   // Register the MCCodeEmitter
-  TargetRegistry::RegisterMCCodeEmitter(TheLEGTarget, createLEGMCCodeEmitter);
+  TargetRegistry::RegisterMCCodeEmitter(ThePIKATarget, createPIKAMCCodeEmitter);
 }

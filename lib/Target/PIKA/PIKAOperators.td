@@ -1,4 +1,4 @@
-//===-- LEGOperators.td - LEG-specific operators ------*- tblgen-*-===//
+//===-- PIKAOperators.td - PIKA-specific operators ------*- tblgen-*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -15,31 +15,31 @@ def MoveImm32Ty : SDTypeProfile<1, 1, [
   SDTCisSameAs<0, 1>, SDTCisInt<0>
 ]>;
 
-def SDT_LEGCallSeqStart : SDCallSeqStart<[ SDTCisVT<0, i32> ]>;
+def SDT_PIKACallSeqStart : SDCallSeqStart<[ SDTCisVT<0, i32> ]>;
 
-def SDT_LEGCallSeqEnd   : SDCallSeqEnd<[
+def SDT_PIKACallSeqEnd   : SDCallSeqEnd<[
   SDTCisVT<0, i32>, SDTCisVT<1, i32>
 ]>;
 
-def LEGRetFlag    : SDNode<"LEGISD::RET_FLAG", SDTNone,
+def PIKARetFlag    : SDNode<"PIKAISD::RET_FLAG", SDTNone,
                            [SDNPHasChain, SDNPOptInGlue, SDNPVariadic]>;
-def callseq_start : SDNode<"ISD::CALLSEQ_START", SDT_LEGCallSeqStart,
+def callseq_start : SDNode<"ISD::CALLSEQ_START", SDT_PIKACallSeqStart,
                            [SDNPHasChain, SDNPOutGlue]>;
-def callseq_end   : SDNode<"ISD::CALLSEQ_END",   SDT_LEGCallSeqEnd,
+def callseq_end   : SDNode<"ISD::CALLSEQ_END",   SDT_PIKACallSeqEnd,
                            [SDNPHasChain, SDNPOptInGlue, SDNPOutGlue]>;
 
-def SDT_LEGCall    : SDTypeProfile<0, -1, [SDTCisPtrTy<0>]>;
+def SDT_PIKACall    : SDTypeProfile<0, -1, [SDTCisPtrTy<0>]>;
 
 //===----------------------------------------------------------------------===//
 // Custom SDNodes.
 //===----------------------------------------------------------------------===//
 
-def load_sym : SDNode<"LEGISD::LOAD_SYM", SDTIntUnaryOp>;
+def load_sym : SDNode<"PIKAISD::LOAD_SYM", SDTIntUnaryOp>;
 
-def movei32 : SDNode<"LEGISD::MOVEi32", MoveImm32Ty>;
+def movei32 : SDNode<"PIKAISD::MOVEi32", MoveImm32Ty>;
 
-def leg_call
-    : SDNode<"LEGISD::CALL", SDT_LEGCall,
+def pika_call
+    : SDNode<"PIKAISD::CALL", SDT_PIKACall,
              [ SDNPHasChain, SDNPOptInGlue, SDNPOutGlue, SDNPVariadic ]>;
 
 //===----------------------------------------------------------------------===//
@@ -64,8 +64,8 @@ def i32imm_lo : Operand<i32>, ImmLeaf<i32, [{
   return Imm >= 0 && Imm < 65536;
 }]>;
 
-def LEGimm8 : Operand<i32>, ImmLeaf<i32, [{
-  return Imm >= 0 && Imm < 256;
+def PIKAimm32 : Operand<i32>, ImmLeaf<i32, [{
+  return Imm >= 0 && Imm < 4294967296;
 }]>;
 
 //===----------------------------------------------------------------------===//

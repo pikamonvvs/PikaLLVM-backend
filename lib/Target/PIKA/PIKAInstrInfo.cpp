@@ -1,4 +1,4 @@
-//===-- LEGInstrInfo.cpp - LEG Instruction Information ----------------===//
+//===-- PIKAInstrInfo.cpp - PIKA Instruction Information ----------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,14 +7,14 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This file contains the LEG implementation of the TargetInstrInfo class.
+// This file contains the PIKA implementation of the TargetInstrInfo class.
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGInstrInfo.h"
-#include "LEG.h"
-#include "LEGMachineFunctionInfo.h"
-#include "MCTargetDesc/LEGBaseInfo.h"
+#include "PIKAInstrInfo.h"
+#include "PIKA.h"
+#include "PIKAMachineFunctionInfo.h"
+#include "MCTargetDesc/PIKABaseInfo.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/CodeGen/MachineConstantPool.h"
 #include "llvm/CodeGen/MachineFrameInfo.h"
@@ -28,15 +28,15 @@
 #include "llvm/Support/TargetRegistry.h"
 
 #define GET_INSTRINFO_CTOR_DTOR
-#include "LEGGenInstrInfo.inc"
+#include "PIKAGenInstrInfo.inc"
 
 using namespace llvm;
 
 // Pin the vtable to this file.
-void LEGInstrInfo::anchor() {}
+void PIKAInstrInfo::anchor() {}
 
-LEGInstrInfo::LEGInstrInfo()
-  : LEGGenInstrInfo(LEG::ADJCALLSTACKDOWN, LEG::ADJCALLSTACKUP),
+PIKAInstrInfo::PIKAInstrInfo()
+  : PIKAGenInstrInfo(PIKA::ADJCALLSTACKDOWN, PIKA::ADJCALLSTACKUP),
     RI() {
 }
 
@@ -46,7 +46,7 @@ LEGInstrInfo::LEGInstrInfo()
 /// not, return 0.  This predicate must return 0 if the instruction has
 /// any side effects other than loading from the stack slot.
 unsigned
-LEGInstrInfo::isLoadFromStackSlot(const MachineInstr *MI, int &FrameIndex) const{
+PIKAInstrInfo::isLoadFromStackSlot(const MachineInstr *MI, int &FrameIndex) const{
   assert(0 && "Unimplemented");
   return 0;
 }
@@ -57,7 +57,7 @@ LEGInstrInfo::isLoadFromStackSlot(const MachineInstr *MI, int &FrameIndex) const
   /// not, return 0.  This predicate must return 0 if the instruction has
   /// any side effects other than storing to the stack slot.
 unsigned
-LEGInstrInfo::isStoreToStackSlot(const MachineInstr *MI,
+PIKAInstrInfo::isStoreToStackSlot(const MachineInstr *MI,
                                    int &FrameIndex) const {
   assert(0 && "Unimplemented");
   return 0;
@@ -91,7 +91,7 @@ LEGInstrInfo::isStoreToStackSlot(const MachineInstr *MI,
 /// cases where this method returns success.
 ///
 bool
-LEGInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
+PIKAInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
                             MachineBasicBlock *&FBB,
                             SmallVectorImpl<MachineOperand> &Cond,
                             bool AllowModify) const {
@@ -99,14 +99,14 @@ LEGInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
   TBB = nullptr;
   FBB = nullptr;
   for (MachineInstr &MI : MBB) {
-    if (MI.getOpcode() == LEG::B) {
+    if (MI.getOpcode() == PIKA::JMP) {
       MachineBasicBlock *TargetBB = MI.getOperand(0).getMBB();
       if (HasCondBranch) {
         FBB = TargetBB;
       } else {
         TBB = TargetBB;
       }
-    } else if (MI.getOpcode() == LEG::Bcc) {
+    } else if (MI.getOpcode() == PIKA::Jcc) {
       MachineBasicBlock *TargetBB = MI.getOperand(1).getMBB();
       TBB = TargetBB;
       Cond.push_back(MI.getOperand(0));
@@ -120,7 +120,7 @@ LEGInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
 /// This is only invoked in cases where AnalyzeBranch returns success. It
 /// returns the number of instructions that were removed.
 unsigned
-LEGInstrInfo::RemoveBranch(MachineBasicBlock &MBB) const {
+PIKAInstrInfo::RemoveBranch(MachineBasicBlock &MBB) const {
   if (MBB.empty())
     return 0;
   unsigned NumRemoved = 0;
@@ -128,7 +128,7 @@ LEGInstrInfo::RemoveBranch(MachineBasicBlock &MBB) const {
   do {
     --I;
     unsigned Opc = I->getOpcode();
-    if ((Opc == LEG::B) || (Opc == LEG::Bcc)) {
+    if ((Opc == PIKA::JMP) || (Opc == PIKA::Jcc)) {
       auto ToDelete = I;
       ++I;
       MBB.erase(ToDelete);
@@ -148,7 +148,7 @@ LEGInstrInfo::RemoveBranch(MachineBasicBlock &MBB) const {
 /// cases where AnalyzeBranch doesn't apply because there was no original
 /// branch to analyze.  At least this much must be implemented, else tail
 /// merging needs to be disabled.
-unsigned LEGInstrInfo::InsertBranch(MachineBasicBlock &MBB,
+unsigned PIKAInstrInfo::InsertBranch(MachineBasicBlock &MBB,
                                     MachineBasicBlock *TBB,
                                     MachineBasicBlock *FBB,
                                     ArrayRef<MachineOperand> Cond,
@@ -157,55 +157,55 @@ unsigned LEGInstrInfo::InsertBranch(MachineBasicBlock &MBB,
   
   // Insert any conditional branch.
   if (Cond.size() > 0) {
-    BuildMI(MBB, MBB.end(), DL, get(LEG::Bcc)).addOperand(Cond[0]).addMBB(TBB);
+    BuildMI(MBB, MBB.end(), DL, get(PIKA::Jcc)).addOperand(Cond[0]).addMBB(TBB);
     NumInserted++;
   }
   
   // Insert any unconditional branch.
   if (Cond.empty() || FBB) {
-    BuildMI(MBB, MBB.end(), DL, get(LEG::B)).addMBB(Cond.empty() ? TBB : FBB);
+    BuildMI(MBB, MBB.end(), DL, get(PIKA::JMP)).addMBB(Cond.empty() ? TBB : FBB);
     NumInserted++;
   }
   return NumInserted;
 }
 
-void LEGInstrInfo::copyPhysReg(MachineBasicBlock &MBB,
+void PIKAInstrInfo::copyPhysReg(MachineBasicBlock &MBB,
                                  MachineBasicBlock::iterator I, DebugLoc DL,
                                  unsigned DestReg, unsigned SrcReg,
                                  bool KillSrc) const {
-  BuildMI(MBB, I, I->getDebugLoc(), get(LEG::MOVrr), DestReg)
+  BuildMI(MBB, I, I->getDebugLoc(), get(PIKA::MOVrr), DestReg)
       .addReg(SrcReg, getKillRegState(KillSrc));
 }
 
-void LEGInstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
+void PIKAInstrInfo::storeRegToStackSlot(MachineBasicBlock &MBB,
                                          MachineBasicBlock::iterator I,
                                          unsigned SrcReg, bool isKill,
                                          int FrameIndex,
                                          const TargetRegisterClass *RC,
                                          const TargetRegisterInfo *TRI) const
 {
-  BuildMI(MBB, I, I->getDebugLoc(), get(LEG::STR))
+  BuildMI(MBB, I, I->getDebugLoc(), get(PIKA::STR))
     .addReg(SrcReg, getKillRegState(isKill))
     .addFrameIndex(FrameIndex).addImm(0);
 }
 
-void LEGInstrInfo::loadRegFromStackSlot(MachineBasicBlock &MBB,
+void PIKAInstrInfo::loadRegFromStackSlot(MachineBasicBlock &MBB,
                                           MachineBasicBlock::iterator I,
                                           unsigned DestReg, int FrameIndex,
                                           const TargetRegisterClass *RC,
                                           const TargetRegisterInfo *TRI) const
 {
-  BuildMI(MBB, I, I->getDebugLoc(), get(LEG::LDR), DestReg)
+  BuildMI(MBB, I, I->getDebugLoc(), get(PIKA::LD), DestReg)
       .addFrameIndex(FrameIndex).addImm(0);
 }
 
-bool LEGInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const
+bool PIKAInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const
 {
   switch (MI->getOpcode())
   {
   default:
     return false;
-  case LEG::MOVi32: {
+  case PIKA::MOVri: {
     DebugLoc DL = MI->getDebugLoc();
     MachineBasicBlock &MBB = *MI->getParent();
 
@@ -214,8 +214,8 @@ bool LEGInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const
 
     const MachineOperand &MO = MI->getOperand(1);
 
-    auto LO16 = BuildMI(MBB, MI, DL, get(LEG::MOVLOi16), DstReg);
-    auto HI16 = BuildMI(MBB, MI, DL, get(LEG::MOVHIi16))
+    auto LO16 = BuildMI(MBB, MI, DL, get(PIKA::MOVriLO16), DstReg);
+    auto HI16 = BuildMI(MBB, MI, DL, get(PIKA::MOVriHI16))
                     .addReg(DstReg, RegState::Define | getDeadRegState(DstIsDead))
                     .addReg(DstReg);
 
@@ -228,8 +228,8 @@ bool LEGInstrInfo::expandPostRAPseudo(MachineBasicBlock::iterator MI) const
     } else {
       const GlobalValue *GV = MO.getGlobal();
       const unsigned TF = MO.getTargetFlags();
-      LO16 = LO16.addGlobalAddress(GV, MO.getOffset(), TF | LEGII::MO_LO16);
-      HI16 = HI16.addGlobalAddress(GV, MO.getOffset(), TF | LEGII::MO_HI16);
+      LO16 = LO16.addGlobalAddress(GV, MO.getOffset(), TF | PIKAII::MO_LO16);
+      HI16 = HI16.addGlobalAddress(GV, MO.getOffset(), TF | PIKAII::MO_HI16);
     }
 
     MBB.erase(MI);

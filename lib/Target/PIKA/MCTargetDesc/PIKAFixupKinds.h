@@ -1,4 +1,4 @@
-//===-- LEGFixupKinds.h - LEG-Specific Fixup Entries ------------*- C++ -*-===//
+//===-- PIKAFixupKinds.h - PIKA-Specific Fixup Entries ------------*- C++ -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,16 +7,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-#ifndef LLVM_LEGFIXUPKINDS_H
-#define LLVM_LEGFIXUPKINDS_H
+#ifndef LLVM_PIKAFIXUPKINDS_H
+#define LLVM_PIKAFIXUPKINDS_H
 
 #include "llvm/MC/MCFixup.h"
 
 namespace llvm {
-namespace LEG {
+namespace PIKA {
 enum Fixups {
-  fixup_leg_mov_hi16_pcrel = FirstTargetFixupKind,
-  fixup_leg_mov_lo16_pcrel,
+  fixup_pika_mov_hi16_pcrel = FirstTargetFixupKind,
+  fixup_pika_mov_lo16_pcrel,
 
   // Marker
   LastTargetFixupKind,

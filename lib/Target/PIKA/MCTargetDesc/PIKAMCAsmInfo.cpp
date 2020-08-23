@@ -1,4 +1,4 @@
-//===-- LEGMCAsmInfo.cpp - LEG asm properties -------------------------===//
+//===-- PIKAMCAsmInfo.cpp - PIKA asm properties -------------------------===//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,13 +7,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "LEGMCAsmInfo.h"
+#include "PIKAMCAsmInfo.h"
 #include "llvm/ADT/StringRef.h"
 using namespace llvm;
 
-void LEGMCAsmInfo::anchor() {}
+void PIKAMCAsmInfo::anchor() {}
 
-LEGMCAsmInfo::LEGMCAsmInfo(const Triple &TT) {
+PIKAMCAsmInfo::PIKAMCAsmInfo(const Triple &TT) {
   SupportsDebugInformation = true;
   Data16bitsDirective = "\t.short\t";
   Data32bitsDirective = "\t.long\t";
