@@ -48,14 +48,41 @@ multiclass ALUInst<bits<5> opcode, string opstr, SDNode opnode> {
   }
 }
 
+multiclass NotInst<bits<5> opcode, string opstr> {
+  def r : PIKAInst<(outs GRRegs:$rd), (ins GRRegs:$rs),
+                   !strconcat(opstr, " $rd, $rs"),
+                   [(set GRRegs:$rd, (not GRRegs:$rs))]> {
+    bits<4> rd;
+    bits<4> rs;
+    let Inst{31-27} = opcode;
+    let Inst{26} = 0b0;
+    let Inst{25-22} = rd;
+    let Inst{21-18} = rs;
+    let Inst{17-14} = 0;
+    let Inst{13-0} = 0;
+  }
+  def i : PIKAInst<(outs GRRegs:$rd), (ins i32imm:$imm),
+                   !strconcat(opstr, " $rd, $imm"),
+                   [(set GRRegs:$rd, (not PIKAimm32:$imm))]> {
+    bits<4> rd;
+    bits<18> imm;
+    let Inst{31-27} = opcode;
+    let Inst{26} = 0b1;
+    let Inst{25-22} = rd;
+    let Inst{21-18} = 0;
+    let Inst{17-0} = imm;
+  }
+}
+
 defm ADD  : ALUInst<0b00000, "add", add>;
 defm SUB  : ALUInst<0b00001, "sub", sub>;
 defm MUL  : ALUInst<0b00010, "mul", mul>;
-defm DIV  : ALUInst<0b00011, "div", udiv>;
+defm DIV  : ALUInst<0b00011, "div", sdiv>;
 
 defm AND  : ALUInst<0b00100, "and", and>;
 defm OR   : ALUInst<0b00101, "or ", or>;
-defm XOR  : ALUInst<0b00110, "xor", xor>;
+defm NOT  : NotInst<0b00110, "not">;
+defm XOR  : ALUInst<0b00111, "xor", xor>;
 
 defm SHL  : ALUInst<0b01000, "shl", shl>;
 defm SHR  : ALUInst<0b01001, "shr", srl>;
@@ -152,7 +179,7 @@ let isTerminator = 1, isBranch = 1, Uses = [CPSR] in {
 //===----------------------------------------------------------------------===//
 
 def LD : PIKAInst<(outs GRRegs:$rd), (ins memsrc:$ms),
-                  "ld $rd, $ms",
+                  "ld  $rd, $ms",
                   [(set i32:$rd, (load addr:$ms))]> {
   bits<4> rd;
   bits<22> ms;
