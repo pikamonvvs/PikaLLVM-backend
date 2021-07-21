@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #define DEBUG_TYPE "asm-printer"
+#include "PIKA.h"
 #include "PIKAInstPrinter.h"
 #include "llvm/ADT/StringExtras.h"
 #include "llvm/CodeGen/ISDOpcodes.h"
@@ -109,10 +110,47 @@ const char * condCodeToString(ISD::CondCode CC) {
 // Print a condition code (e.g. for predication).
 void PIKAInstPrinter::printCondCode(const MCInst *MI, unsigned OpNum,
                                    raw_ostream &O) {
-  const MCOperand &Op = MI->getOperand(OpNum);
-  ISD::CondCode CC = (ISD::CondCode)Op.getImm();
-  const char *Str = condCodeToString(CC);
-  O << Str;
+//  const MCOperand &Op = MI->getOperand(OpNum);
+//  ISD::CondCode CC = (ISD::CondCode)Op.getImm();
+//  const char *Str = condCodeToString(CC);
+//  O << Str;
+  unsigned CC = MI->getOperand(OpNum).getImm();
+
+  switch (CC) {
+  default:
+   llvm_unreachable("Unsupported CC code");
+  case PIKACC::COND_C:
+   O << "c";
+   break;
+  case PIKACC::COND_N:
+   O << "n";
+   break;
+  case PIKACC::COND_V:
+   O << "v";
+   break;
+  case PIKACC::COND_Z:
+   O << "eq";
+   break;
+  case PIKACC::COND_NC:
+   O << "nc";
+   break;
+  case PIKACC::COND_NN:
+   O << "nn";
+   break;
+  case PIKACC::COND_NV:
+   O << "nv";
+   break;
+  case PIKACC::COND_NZ:
+   O << "ne";
+   break;
+  case PIKACC::COND_GE:
+   O << "ge";
+   break;
+  case PIKACC::COND_L:
+   O << "l";
+   break;
+
+  }
 }
 
 // Print a 'memsrc' operand which is a (Register, Offset) pair.
@@ -145,4 +183,15 @@ void PIKAInstPrinter::printOperand(const MCInst *MI, unsigned OpNo,
 
   assert(Op.isExpr() && "unknown operand kind in printOperand");
   printExpr(Op.getExpr(), O);
+}
+
+void PIKAInstPrinter::printPCRelImmOperand(const MCInst *MI, unsigned OpNo,
+                                             raw_ostream &O) {
+  const MCOperand &Op = MI->getOperand(OpNo);
+  if (Op.isImm())
+    O << Op.getImm();
+  else {
+    assert(Op.isExpr() && "unknown pcrel immediate operand");
+    Op.getExpr()->print(O, &MAI);
+  }
 }

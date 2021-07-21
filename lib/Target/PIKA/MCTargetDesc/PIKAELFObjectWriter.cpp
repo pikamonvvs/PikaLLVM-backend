@@ -44,6 +44,9 @@ unsigned PIKAELFObjectWriter::GetRelocType(const MCValue &Target,
   switch ((unsigned)Fixup.getKind()) {
   default:
     llvm_unreachable("Unimplemented");
+  case PIKA::fixup_PIKA_32:
+    Type = ELF::R_ARM_MOVT_PREL;
+    break;
   case PIKA::fixup_pika_mov_hi16_pcrel:
     Type = ELF::R_ARM_MOVT_PREL;
     break;

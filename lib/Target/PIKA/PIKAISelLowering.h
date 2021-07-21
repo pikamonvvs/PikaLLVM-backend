@@ -30,6 +30,10 @@ enum NodeType {
   // Start the numbering where the builtin ops and target ops leave off.
   FIRST_NUMBER = ISD::BUILTIN_OP_END,
   RET_FLAG,
+  // The compare instruction
+  CMP,
+  // Branch conditional, condition-code
+  BR_CC,
   // This loads the symbol (e.g. global address) into a register.
   LOAD_SYM,
   // This loads a 32-bit immediate into a register.
@@ -47,6 +51,8 @@ public:
 
   /// LowerOperation - Provide custom lowering hooks for some operations.
   virtual SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;
+
+  SDValue LowerBR_CC(SDValue Op, SelectionDAG &DAG) const;
 
   /// getTargetNodeName - This method returns the name of a target specific
   //  DAG node.

@@ -15,6 +15,22 @@ include "PIKAInstrFormats.td"
 include "PIKAOperators.td"
 
 //===----------------------------------------------------------------------===//
+// Type Profiles.
+//===----------------------------------------------------------------------===//
+
+def SDT_PIKACmp          : SDTypeProfile<0, 2, [SDTCisSameAs<0, 1>]>;
+def SDT_PIKABrCC         : SDTypeProfile<0, 2, [SDTCisVT<0, OtherVT>,
+                                               SDTCisVT<1, i32>]>;
+
+//===----------------------------------------------------------------------===//
+// PIKA Specific Node Definitions.
+//===----------------------------------------------------------------------===//
+
+def PIKAcmp     : SDNode<"PIKAISD::CMP", SDT_PIKACmp, [SDNPOutGlue]>;
+def PIKAbrcc    : SDNode<"PIKAISD::BR_CC", SDT_PIKABrCC, [SDNPHasChain,
+                                                       SDNPInGlue]>;
+
+//===----------------------------------------------------------------------===//
 // ALU Instructions
 //===----------------------------------------------------------------------===//
 
@@ -138,18 +154,52 @@ def : Pattern<(i32 (load_sym tglobaladdr:$addr)), [(MOVri $addr)]>;
 // Comparison Instructions
 //===----------------------------------------------------------------------===//
 
-def CMP : PIKAInst<(outs), (ins GRRegs:$rs, GRRegs:$rt),
-                    "cmp $rs, $rt", []> {
+//def CMP : PIKAInst<(outs), (ins GRRegs:$rs, GRRegs:$rt),
+//                    "cmp $rs, $rt", []> {
+//  bits<4> rs;
+//  bits<4> rt;
+//  let Inst{31-26} = 0b100000;
+//  let Inst{25-22} = 0b0000;
+//  let Inst{21-18} = rs;
+//  let Inst{17-14} = rt;
+//  let Inst{13-0} = 0;
+//
+//  let Defs = [CPSR];
+//}
+
+multiclass CMPInst<bits<5> opcode, string opstr> {
+  def rr : PIKAInst<(outs),
+                    (ins GRRegs:$rs, GRRegs:$rt),
+                    !strconcat(opstr, " $rs, $rt"),
+                    [(PIKAcmp GRRegs:$rs, GRRegs:$rt)]> {
   bits<4> rs;
   bits<4> rt;
-  let Inst{31-26} = 0b100000;
+  let Inst{31-27} = opcode;
+  let Inst{26} = 0b0;
   let Inst{25-22} = 0b0000;
   let Inst{21-18} = rs;
   let Inst{17-14} = rt;
   let Inst{13-0} = 0;
 
   let Defs = [CPSR];
+  }
+  def ri : PIKAInst<(outs),
+                    (ins GRRegs:$rs, i32imm:$imm),
+                    !strconcat(opstr, " $rs, $imm"),
+                    [(PIKAcmp GRRegs:$rs, PIKAimm32:$imm)]> {
+  bits<4> rs;
+  bits<18> imm;
+  let Inst{31-27} = opcode;
+  let Inst{26} = 0b1;
+  let Inst{25-22} = 0b0000;
+  let Inst{21-18} = rs;
+  let Inst{17-0} = imm;
+
+  let Defs = [CPSR];
+  }
 }
+
+defm CMP : CMPInst<0b10000, "cmp">;
 
 //===----------------------------------------------------------------------===//
 // Branch Instructions
@@ -167,10 +217,14 @@ let isTerminator = 1, isBranch = 1, isBarrier = 1 in {
 }
 
 let isTerminator = 1, isBranch = 1, Uses = [CPSR] in {
-  def Jcc : PIKAInst<(outs), (ins cc_val:$cc, b_target:$rd),
-                    "j$cc $rd",  []> {
+  def Jcc : PIKAInst<(outs), (ins cc_val:$cc, b_target:$md),
+                    "j$cc $md",  [(PIKAbrcc bb:$md, imm:$cc)]> {
+    bits<4> cc;
+    bits<22> md;
     let Inst{31-27} = 0b10001;
     let Inst{26} = 0b1;
+    let Inst{25-22} = cc;
+    let Inst{21-0} = md;
   }
 }
 

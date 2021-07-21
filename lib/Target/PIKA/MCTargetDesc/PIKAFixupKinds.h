@@ -18,6 +18,10 @@ enum Fixups {
   fixup_pika_mov_hi16_pcrel = FirstTargetFixupKind,
   fixup_pika_mov_lo16_pcrel,
 
+  // Pure 32 but data fixup
+  fixup_PIKA_NONE,
+  fixup_PIKA_32,
+
   // Marker
   LastTargetFixupKind,
   NumTargetFixupKinds = LastTargetFixupKind - FirstTargetFixupKind

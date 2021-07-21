@@ -48,7 +48,9 @@ def pika_call
 
 def bl_target : Operand<i32>;
 
-def b_target : Operand<OtherVT>;
+def b_target : Operand<OtherVT> {
+  let PrintMethod = "printPCRelImmOperand";
+}
 
 def cc_val : Operand<i32> {
   let PrintMethod = "printCondCode";

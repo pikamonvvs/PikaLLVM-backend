@@ -43,6 +43,8 @@ const char *PIKATargetLowering::getTargetNodeName(unsigned Opcode) const {
   default:
     return NULL;
   case PIKAISD::RET_FLAG: return "RetFlag";
+  case PIKAISD::CMP:      return "CMP";
+  case PIKAISD::BR_CC:    return "BR_CC";
   case PIKAISD::LOAD_SYM: return "LOAD_SYM";
   case PIKAISD::MOVEi32:  return "MOVEi32";
   case PIKAISD::CALL:     return "CALL";
@@ -62,6 +64,8 @@ PIKATargetLowering::PIKATargetLowering(PIKATargetMachine &PIKATM)
   setSchedulingPreference(Sched::Source);
 
   // Nodes that require custom lowering
+  setOperationAction(ISD::BR_CC, MVT::i32, Custom);
+  setOperationAction(ISD::BRCOND, MVT::Other, Expand);
   setOperationAction(ISD::GlobalAddress, MVT::i32, Custom);
 }
 
@@ -69,6 +73,8 @@ SDValue PIKATargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const 
   switch (Op.getOpcode()) {
   default:
     llvm_unreachable("Unimplemented operand");
+  case ISD::BR_CC:
+    return LowerBR_CC(Op, DAG);
   case ISD::GlobalAddress:
     return LowerGlobalAddress(Op, DAG);
   }
@@ -350,4 +356,105 @@ PIKATargetLowering::LowerReturn(SDValue Chain, CallingConv::ID CallConv,
   }
 
   return DAG.getNode(PIKAISD::RET_FLAG, dl, MVT::Other, RetOps);
+}
+
+static SDValue EmitCMP(SDValue &LHS, SDValue &RHS, SDValue &TargetCC,
+                       ISD::CondCode CC, const SDLoc &dl, SelectionDAG &DAG) {
+
+  assert(!LHS.getValueType().isFloatingPoint() && "We don't handle FP yet");
+
+  PIKACC::CondCodes TCC = PIKACC::COND_INVALID;
+  switch (CC) {
+  default: llvm_unreachable("Invalid integer condition!");
+  case ISD::SETEQ:
+    TCC = PIKACC::COND_Z;     // aka COND_Z
+    // Minor optimization: if LHS is a constant, swap operands, then the
+    // constant can be folded into comparison.
+    if (LHS.getOpcode() == ISD::Constant) {
+      std::swap(LHS, RHS);
+    }
+    break;
+  case ISD::SETNE:
+    TCC = PIKACC::COND_NZ;    // aka COND_NZ
+    // Minor optimization: if LHS is a constant, swap operands, then the
+    // constant can be folded into comparison.
+    if (LHS.getOpcode() == ISD::Constant) {
+      std::swap(LHS, RHS);
+    }
+    break;
+  case ISD::SETULE:
+    std::swap(LHS, RHS);
+    LLVM_FALLTHROUGH;
+  case ISD::SETUGE:
+    // Turn lhs u>= rhs with lhs constant into rhs u< lhs+1, this allows us to
+    // fold constant into instruction.
+    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
+      LHS = RHS;
+      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
+      TCC = PIKACC::COND_NC;
+      break;
+    }
+    TCC = PIKACC::COND_C;    // aka COND_C
+    break;
+  case ISD::SETUGT:
+    std::swap(LHS, RHS);
+    LLVM_FALLTHROUGH;
+  case ISD::SETULT:
+    // Turn lhs u< rhs with lhs constant into rhs u>= lhs+1, this allows us to
+    // fold constant into instruction.
+    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
+      LHS = RHS;
+      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
+      TCC = PIKACC::COND_C;
+      break;
+    }
+    TCC = PIKACC::COND_NC;    // aka COND_NC
+    break;
+  case ISD::SETLE:
+    std::swap(LHS, RHS);
+    LLVM_FALLTHROUGH;
+  case ISD::SETGE:
+    // Turn lhs >= rhs with lhs constant into rhs < lhs+1, this allows us to
+    // fold constant into instruction.
+    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
+      LHS = RHS;
+      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
+      TCC = PIKACC::COND_L;
+      break;
+    }
+    TCC = PIKACC::COND_GE;
+    break;
+  case ISD::SETGT:
+    std::swap(LHS, RHS);
+    LLVM_FALLTHROUGH;
+  case ISD::SETLT:
+    // Turn lhs < rhs with lhs constant into rhs >= lhs+1, this allows us to
+    // fold constant into instruction.
+    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
+      LHS = RHS;
+      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
+      TCC = PIKACC::COND_GE;
+      break;
+    }
+    TCC = PIKACC::COND_L;
+    break;
+  }
+
+  TargetCC = DAG.getConstant(TCC, dl, MVT::i32);
+  return DAG.getNode(PIKAISD::CMP, dl, MVT::Glue, LHS, RHS);
+}
+
+SDValue PIKATargetLowering::LowerBR_CC(SDValue Op, SelectionDAG &DAG) const {
+  SDValue Chain = Op.getOperand(0);
+  ISD::CondCode CC = cast<CondCodeSDNode>(Op.getOperand(1))->get();
+  SDValue LHS   = Op.getOperand(2);
+  SDValue RHS   = Op.getOperand(3);
+  SDValue Dest  = Op.getOperand(4);
+  SDLoc dl  (Op);
+
+  SDValue TargetCC;
+  SDValue Flag = EmitCMP(LHS, RHS, TargetCC, CC, dl, DAG);
+
+  return DAG.getNode(PIKAISD::BR_CC, dl, Op.getValueType(),
+                     Chain, Dest, TargetCC, Flag);
 }

@@ -112,6 +112,9 @@ unsigned PIKAMCCodeEmitter::getMachineOpValue(const MCInst &MI,
   switch (cast<MCSymbolRefExpr>(Expr)->getKind()) {
   default:
     llvm_unreachable("Unknown fixup kind!");
+  case MCSymbolRefExpr::VK_None:
+    FixupKind = PIKA::fixup_PIKA_32;
+    break;
   case MCSymbolRefExpr::VK_PIKA_LO: {
     FixupKind = PIKA::fixup_pika_mov_lo16_pcrel;
     break;
