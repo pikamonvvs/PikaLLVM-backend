@@ -172,30 +172,28 @@ multiclass CMPInst<bits<5> opcode, string opstr> {
                     (ins GRRegs:$rs, GRRegs:$rt),
                     !strconcat(opstr, " $rs, $rt"),
                     [(PIKAcmp GRRegs:$rs, GRRegs:$rt)]> {
-  bits<4> rs;
-  bits<4> rt;
-  let Inst{31-27} = opcode;
-  let Inst{26} = 0b0;
-  let Inst{25-22} = 0b0000;
-  let Inst{21-18} = rs;
-  let Inst{17-14} = rt;
-  let Inst{13-0} = 0;
-
-  let Defs = [CPSR];
+    bits<4> rs;
+    bits<4> rt;
+    let Inst{31-27} = opcode;
+    let Inst{26} = 0b0;
+    let Inst{25-22} = 0b0000;
+    let Inst{21-18} = rs;
+    let Inst{17-14} = rt;
+    let Inst{13-0} = 0;
+    let Defs = [CPSR];
   }
   def ri : PIKAInst<(outs),
                     (ins GRRegs:$rs, i32imm:$imm),
                     !strconcat(opstr, " $rs, $imm"),
                     [(PIKAcmp GRRegs:$rs, PIKAimm32:$imm)]> {
-  bits<4> rs;
-  bits<18> imm;
-  let Inst{31-27} = opcode;
-  let Inst{26} = 0b1;
-  let Inst{25-22} = 0b0000;
-  let Inst{21-18} = rs;
-  let Inst{17-0} = imm;
-
-  let Defs = [CPSR];
+    bits<4> rs;
+    bits<18> imm;
+    let Inst{31-27} = opcode;
+    let Inst{26} = 0b1;
+    let Inst{25-22} = 0b0000;
+    let Inst{21-18} = rs;
+    let Inst{17-0} = imm;
+    let Defs = [CPSR];
   }
 }
 
