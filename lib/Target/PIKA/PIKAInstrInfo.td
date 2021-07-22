@@ -64,7 +64,7 @@ multiclass ALUInst<bits<5> opcode, string opstr, SDNode opnode> {
   }
 }
 
-multiclass NotInst<bits<5> opcode, string opstr> {
+multiclass NOTInst<bits<5> opcode, string opstr> {
   def r : PIKAInst<(outs GRRegs:$rd), (ins GRRegs:$rs),
                    !strconcat(opstr, " $rd, $rs"),
                    [(set GRRegs:$rd, (not GRRegs:$rs))]> {
@@ -97,7 +97,7 @@ defm DIV  : ALUInst<0b00011, "div", sdiv>;
 
 defm AND  : ALUInst<0b00100, "and", and>;
 defm OR   : ALUInst<0b00101, "or ", or>;
-defm NOT  : NotInst<0b00110, "not">;
+defm NOT  : NOTInst<0b00110, "not">;
 defm XOR  : ALUInst<0b00111, "xor", xor>;
 
 defm SHL  : ALUInst<0b01000, "shl", shl>;
@@ -234,7 +234,7 @@ let isTerminator = 1, isBranch = 1, Uses = [CPSR] in {
 
 def LD : PIKAInst<(outs GRRegs:$rd), (ins memsrc:$ms),
                   "ld  $rd, $ms",
-                  [(set i32:$rd, (load addr:$ms))]> {
+                  [(set GRRegs:$rd, (load addr:$ms))]> {
   bits<4> rd;
   bits<22> ms;
   let Inst{31-26} = 0b100100;
@@ -244,7 +244,7 @@ def LD : PIKAInst<(outs GRRegs:$rd), (ins memsrc:$ms),
 
 def STR : PIKAInst<(outs), (ins GRRegs:$rs, memsrc:$md),
                   "str $rs, $md",
-                  [(store i32:$rs, addr:$md)]> {
+                  [(store GRRegs:$rs, addr:$md)]> {
   bits<4> rs;
   bits<22> md;
   let Inst{31-26} = 0b100101;

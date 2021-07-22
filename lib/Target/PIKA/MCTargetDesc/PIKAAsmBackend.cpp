@@ -106,9 +106,9 @@ static unsigned adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   default:
     llvm_unreachable("Unknown fixup kind!");
   case PIKA::fixup_PIKA_32:
-    if (Value > 0xFFFF) {
-      llvm_unreachable("Cannot process value larger than 16 bits");
-    }
+//    if (Value > 0xFFFF) {
+//      llvm_unreachable("Cannot process value larger than 16 bits");
+//    }
     return Value;
   case PIKA::fixup_pika_mov_hi16_pcrel:
     Value >>= 16;

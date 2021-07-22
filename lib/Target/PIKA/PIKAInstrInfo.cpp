@@ -47,7 +47,7 @@ PIKAInstrInfo::PIKAInstrInfo()
 /// any side effects other than loading from the stack slot.
 unsigned
 PIKAInstrInfo::isLoadFromStackSlot(const MachineInstr *MI, int &FrameIndex) const{
-  assert(0 && "Unimplemented");
+//  assert(0 && "Unimplemented");
   return 0;
 }
   
@@ -59,7 +59,7 @@ PIKAInstrInfo::isLoadFromStackSlot(const MachineInstr *MI, int &FrameIndex) cons
 unsigned
 PIKAInstrInfo::isStoreToStackSlot(const MachineInstr *MI,
                                    int &FrameIndex) const {
-  assert(0 && "Unimplemented");
+//  assert(0 && "Unimplemented");
   return 0;
 }
 
@@ -108,6 +108,7 @@ PIKAInstrInfo::AnalyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
       }
     } else if (MI.getOpcode() == PIKA::Jcc) {
       MachineBasicBlock *TargetBB = MI.getOperand(1).getMBB();
+      FBB = TBB;
       TBB = TargetBB;
       Cond.push_back(MI.getOperand(0));
       HasCondBranch = true;
