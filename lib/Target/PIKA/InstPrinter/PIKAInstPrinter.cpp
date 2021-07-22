@@ -119,35 +119,41 @@ void PIKAInstPrinter::printCondCode(const MCInst *MI, unsigned OpNum,
   switch (CC) {
   default:
    llvm_unreachable("Unsupported CC code");
-  case PIKACC::COND_C:
-   O << "c";
-   break;
-  case PIKACC::COND_N:
-   O << "n";
-   break;
-  case PIKACC::COND_V:
-   O << "v";
-   break;
-  case PIKACC::COND_Z:
+//  case PIKACC::COND_C:
+//   O << "c";
+//   break;
+//  case PIKACC::COND_N:
+//   O << "n";
+//   break;
+//  case PIKACC::COND_V:
+//   O << "v";
+//   break;
+  case PIKACC::COND_EQ:
    O << "eq";
    break;
-  case PIKACC::COND_NC:
-   O << "nc";
-   break;
-  case PIKACC::COND_NN:
-   O << "nn";
-   break;
-  case PIKACC::COND_NV:
-   O << "nv";
-   break;
-  case PIKACC::COND_NZ:
+//  case PIKACC::COND_NC:
+//   O << "nc";
+//   break;
+//  case PIKACC::COND_NN:
+//   O << "nn";
+//   break;
+//  case PIKACC::COND_NV:
+//   O << "nv";
+//   break;
+  case PIKACC::COND_NE:
    O << "ne";
    break;
   case PIKACC::COND_GE:
    O << "ge";
    break;
-  case PIKACC::COND_L:
-   O << "l";
+  case PIKACC::COND_LT:
+   O << "lt";
+   break;
+  case PIKACC::COND_GT:
+   O << "gt";
+   break;
+  case PIKACC::COND_LE:
+   O << "le";
    break;
 
   }

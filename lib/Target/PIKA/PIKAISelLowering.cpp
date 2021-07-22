@@ -367,7 +367,7 @@ static SDValue EmitCMP(SDValue &LHS, SDValue &RHS, SDValue &TargetCC,
   switch (CC) {
   default: llvm_unreachable("Invalid integer condition!");
   case ISD::SETEQ:
-    TCC = PIKACC::COND_Z;     // aka COND_Z
+    TCC = PIKACC::COND_EQ;     // aka COND_EQ
     // Minor optimization: if LHS is a constant, swap operands, then the
     // constant can be folded into comparison.
     if (LHS.getOpcode() == ISD::Constant) {
@@ -375,41 +375,41 @@ static SDValue EmitCMP(SDValue &LHS, SDValue &RHS, SDValue &TargetCC,
     }
     break;
   case ISD::SETNE:
-    TCC = PIKACC::COND_NZ;    // aka COND_NZ
+    TCC = PIKACC::COND_NE;    // aka COND_NE
     // Minor optimization: if LHS is a constant, swap operands, then the
     // constant can be folded into comparison.
     if (LHS.getOpcode() == ISD::Constant) {
       std::swap(LHS, RHS);
     }
     break;
-  case ISD::SETULE:
-    std::swap(LHS, RHS);
-    LLVM_FALLTHROUGH;
-  case ISD::SETUGE:
-    // Turn lhs u>= rhs with lhs constant into rhs u< lhs+1, this allows us to
-    // fold constant into instruction.
-    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
-      LHS = RHS;
-      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
-      TCC = PIKACC::COND_NC;
-      break;
-    }
-    TCC = PIKACC::COND_C;    // aka COND_C
-    break;
-  case ISD::SETUGT:
-    std::swap(LHS, RHS);
-    LLVM_FALLTHROUGH;
-  case ISD::SETULT:
-    // Turn lhs u< rhs with lhs constant into rhs u>= lhs+1, this allows us to
-    // fold constant into instruction.
-    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
-      LHS = RHS;
-      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
-      TCC = PIKACC::COND_C;
-      break;
-    }
-    TCC = PIKACC::COND_NC;    // aka COND_NC
-    break;
+//  case ISD::SETULE:
+//    std::swap(LHS, RHS);
+//    LLVM_FALLTHROUGH;
+//  case ISD::SETUGE:
+//    // Turn lhs u>= rhs with lhs constant into rhs u< lhs+1, this allows us to
+//    // fold constant into instruction.
+//    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
+//      LHS = RHS;
+//      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
+//      TCC = PIKACC::COND_NC;
+//      break;
+//    }
+//    TCC = PIKACC::COND_C;    // aka COND_C
+//    break;
+//  case ISD::SETUGT:
+//    std::swap(LHS, RHS);
+//    LLVM_FALLTHROUGH;
+//  case ISD::SETULT:
+//    // Turn lhs u< rhs with lhs constant into rhs u>= lhs+1, this allows us to
+//    // fold constant into instruction.
+//    if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
+//      LHS = RHS;
+//      RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
+//      TCC = PIKACC::COND_C;
+//      break;
+//    }
+//    TCC = PIKACC::COND_NC;    // aka COND_NC
+//    break;
   case ISD::SETLE:
     std::swap(LHS, RHS);
     LLVM_FALLTHROUGH;
@@ -419,7 +419,7 @@ static SDValue EmitCMP(SDValue &LHS, SDValue &RHS, SDValue &TargetCC,
     if (const ConstantSDNode * C = dyn_cast<ConstantSDNode>(LHS)) {
       LHS = RHS;
       RHS = DAG.getConstant(C->getSExtValue() + 1, dl, C->getValueType(0));
-      TCC = PIKACC::COND_L;
+      TCC = PIKACC::COND_LT;
       break;
     }
     TCC = PIKACC::COND_GE;
@@ -436,7 +436,7 @@ static SDValue EmitCMP(SDValue &LHS, SDValue &RHS, SDValue &TargetCC,
       TCC = PIKACC::COND_GE;
       break;
     }
-    TCC = PIKACC::COND_L;
+    TCC = PIKACC::COND_LT;
     break;
   }
 
