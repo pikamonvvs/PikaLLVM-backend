@@ -31,6 +31,52 @@ def PIKAbrcc    : SDNode<"PIKAISD::BR_CC", SDT_PIKABrCC, [SDNPHasChain,
                                                        SDNPInGlue]>;
 
 //===----------------------------------------------------------------------===//
+// Mov Instructions
+//===----------------------------------------------------------------------===//
+def MOVrr : PIKAInst<(outs GRRegs:$rd), (ins GRRegs:$rs),
+                     "mov $rd, $rs",
+                     [/* No pattern */]> {
+  bits<4> rd;
+  bits<4> rs;
+  let Inst{31-27} = 0b00000;
+  let Inst{26} = 0b0;
+  let Inst{25-22} = rd;
+  let Inst{21-18} = rs;
+  let Inst{17-0} = 0;
+}
+
+//===----------------------------------------------------------------------===//
+// Mov Immediate Instructions
+//===----------------------------------------------------------------------===//
+
+class MOVi<bits<5> opcode, string opstr, dag ins, list<dag>pattern>
+    : PIKAInst<(outs GRRegs:$rd), ins,
+              !strconcat(opstr, " $rd, $imm"), pattern> {
+  bits<5> opcode;
+  bits<4> rd;
+  bits<18> imm;
+  let Inst{31-27} = opcode;
+  let Inst{26} = 0b1;
+  let Inst{25-22} = rd;
+  let Inst{17-0} = imm;
+}
+
+def MOVriLO16 : MOVi<0b00010, "movl", (ins i32imm:$imm),
+                  [(set i32:$rd, i32imm_lo:$imm)]>;
+def MOVriHI16 : MOVi<0b00011, "movh", (ins GRRegs:$rs, i32imm:$imm),
+                  [/* No Pattern */]> {
+  bits<4> rs;
+  let Inst{21-18} = rs;
+}
+
+def MOVri : PIKAInst<(outs GRRegs:$rd), (ins i32imm:$src), "",
+                     [(set i32:$rd, (movei32 imm:$src))]> {
+  let isPseudo = 1;
+}
+
+def : Pattern<(i32 (load_sym tglobaladdr:$addr)), [(MOVri $addr)]>;
+
+//===----------------------------------------------------------------------===//
 // ALU Instructions
 //===----------------------------------------------------------------------===//
 
@@ -90,65 +136,19 @@ multiclass NOTInst<bits<5> opcode, string opstr> {
   }
 }
 
-defm ADD  : ALUInst<0b00000, "add", add>;
-defm SUB  : ALUInst<0b00001, "sub", sub>;
-defm MUL  : ALUInst<0b00010, "mul", mul>;
-defm DIV  : ALUInst<0b00011, "div", sdiv>;
+defm ADD  : ALUInst<0b00100, "add", add>;
+defm SUB  : ALUInst<0b00101, "sub", sub>;
+defm MUL  : ALUInst<0b00110, "mul", mul>;
+defm DIV  : ALUInst<0b00111, "div", sdiv>;
 
-defm AND  : ALUInst<0b00100, "and", and>;
-defm OR   : ALUInst<0b00101, "or ", or>;
-defm NOT  : NOTInst<0b00110, "not">;
-defm XOR  : ALUInst<0b00111, "xor", xor>;
+defm AND  : ALUInst<0b01000, "and", and>;
+defm OR   : ALUInst<0b01001, "or ", or>;
+defm NOT  : NOTInst<0b01010, "not">;
+defm XOR  : ALUInst<0b01011, "xor", xor>;
 
-defm SHL  : ALUInst<0b01000, "shl", shl>;
-defm SHR  : ALUInst<0b01001, "shr", srl>;
-defm ASR  : ALUInst<0b01010, "asr", sra>;
-
-//===----------------------------------------------------------------------===//
-// Mov Instructions
-//===----------------------------------------------------------------------===//
-def MOVrr : PIKAInst<(outs GRRegs:$rd), (ins GRRegs:$rs),
-                     "mov $rd, $rs",
-                     [/* No pattern */]> {
-  bits<4> rd;
-  bits<4> rs;
-  let Inst{31-27} = 0b01100;
-  let Inst{26} = 0b0;
-  let Inst{25-22} = rd;
-  let Inst{21-18} = rs;
-  let Inst{17-0} = 0;
-}
-
-//===----------------------------------------------------------------------===//
-// Mov Immediate Instructions
-//===----------------------------------------------------------------------===//
-
-class MOVi<bits<5> opcode, string opstr, dag ins, list<dag>pattern>
-    : PIKAInst<(outs GRRegs:$rd), ins,
-              !strconcat(opstr, " $rd, $imm"), pattern> {
-  bits<5> opcode;
-  bits<4> rd;
-  bits<18> imm;
-  let Inst{31-27} = opcode;
-  let Inst{26} = 0b1;
-  let Inst{25-22} = rd;
-  let Inst{17-0} = imm;
-}
-
-def MOVriLO16 : MOVi<0b01110, "movl", (ins i32imm:$imm),
-                  [(set i32:$rd, i32imm_lo:$imm)]>;
-def MOVriHI16 : MOVi<0b01111, "movh", (ins GRRegs:$rs, i32imm:$imm),
-                  [/* No Pattern */]> {
-  bits<4> rs;
-  let Inst{21-18} = rs;
-}
-
-def MOVri : PIKAInst<(outs GRRegs:$rd), (ins i32imm:$src), "",
-                     [(set i32:$rd, (movei32 imm:$src))]> {
-  let isPseudo = 1;
-}
-
-def : Pattern<(i32 (load_sym tglobaladdr:$addr)), [(MOVri $addr)]>;
+defm SHL  : ALUInst<0b01100, "shl", shl>;
+defm SHR  : ALUInst<0b01101, "shr", srl>;
+defm ASR  : ALUInst<0b01110, "asr", sra>;
 
 //===----------------------------------------------------------------------===//
 // Comparison Instructions
