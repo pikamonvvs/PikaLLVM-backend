@@ -204,25 +204,25 @@ defm CMP : CMPInst<0b10000, "cmp">;
 //===----------------------------------------------------------------------===//
 
 let isTerminator = 1, isBranch = 1, isBarrier = 1 in {
-  def JMP : PIKAInst<(outs), (ins b_target:$md),
-                  "jmp $md", [(br bb:$md)]> {
-    bits<22> md;
+  def JMP : PIKAInst<(outs), (ins b_target:$offset),
+                  "jmp $offset", [(br bb:$offset)]> {
+    bits<22> offset;
     let Inst{31-27} = 0b10001;
     let Inst{26} = 0b0;
     let Inst{25-22} = 0;
-    let Inst{21-0} = md;
+    let Inst{21-0} = offset;
   }
 }
 
 let isTerminator = 1, isBranch = 1, Uses = [CPSR] in {
-  def Jcc : PIKAInst<(outs), (ins cc_val:$cc, b_target:$md),
-                    "j$cc $md",  [(PIKAbrcc bb:$md, imm:$cc)]> {
+  def Jcc : PIKAInst<(outs), (ins cc_val:$cc, b_target:$offset),
+                    "j$cc $offset",  [(PIKAbrcc bb:$offset, imm:$cc)]> {
     bits<4> cc;
-    bits<22> md;
+    bits<22> offset;
     let Inst{31-27} = 0b10001;
     let Inst{26} = 0b1;
     let Inst{25-22} = cc;
-    let Inst{21-0} = md;
+    let Inst{21-0} = offset;
   }
 }
 
@@ -230,24 +230,24 @@ let isTerminator = 1, isBranch = 1, Uses = [CPSR] in {
 // Load/Store Instructions
 //===----------------------------------------------------------------------===//
 
-def LD : PIKAInst<(outs GRRegs:$rd), (ins memsrc:$ms),
-                  "ld  $rd, $ms",
-                  [(set GRRegs:$rd, (load addr:$ms))]> {
+def LD : PIKAInst<(outs GRRegs:$rd), (ins memsrc:$mem),
+                  "ld  $rd, $mem",
+                  [(set GRRegs:$rd, (load addr:$mem))]> {
   bits<4> rd;
-  bits<22> ms;
+  bits<22> mem;
   let Inst{31-26} = 0b100100;
   let Inst{25-22} = rd;
-  let Inst{21-0} = ms;
+  let Inst{21-0} = mem;
 }
 
-def STR : PIKAInst<(outs), (ins GRRegs:$rs, memsrc:$md),
-                  "str $rs, $md",
-                  [(store GRRegs:$rs, addr:$md)]> {
-  bits<4> rs;
-  bits<22> md;
+def STR : PIKAInst<(outs), (ins GRRegs:$rd, memsrc:$mem),
+                  "str $rd, $mem",
+                  [(store GRRegs:$rd, addr:$mem)]> {
+  bits<4> rd;
+  bits<22> mem;
   let Inst{31-26} = 0b100101;
-  let Inst{25-22} = rs;
-  let Inst{21-0} = md;
+  let Inst{25-22} = rd;
+  let Inst{21-0} = mem;
 }
 
 //===----------------------------------------------------------------------===//
@@ -255,12 +255,12 @@ def STR : PIKAInst<(outs), (ins GRRegs:$rs, memsrc:$md),
 //===----------------------------------------------------------------------===//
 
 let isCall = 1, Defs = [LR], Uses = [SP] in {
-  def CALL : PIKAInst<(outs), (ins GRRegs:$rs),
-                      "call $rs",
-                      [(pika_call i32:$rs)]> {
-    bits<4> rs;
+  def CALL : PIKAInst<(outs), (ins GRRegs:$rd),
+                      "call $rd",
+                      [(pika_call i32:$rd)]> {
+    bits<4> rd;
     let Inst{31-26} = 0b100110;
-    let Inst{25-22} = rs;
+    let Inst{25-22} = rd;
     let Inst{21-0} = 0;
   }
 }
